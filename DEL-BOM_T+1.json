@@ -1,0 +1,5 @@
+[
+  {"airline": "IndiGo", "flight_no": "6E 501", "departure_time": "05:50", "total_fare": 7800, "base_fare": 6200},
+  {"airline": "Air India", "flight_no": "AI 602", "departure_time": "08:40", "total_fare": 8500, "base_fare": 6800},
+  {"airline": "SpiceJet", "flight_no": "SG 703", "departure_time": "12:20", "total_fare": 7100, "base_fare": 5600}
+]
