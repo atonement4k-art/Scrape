@@ -54,12 +54,6 @@
 
             --transition: 0.3s ease;
             --card-accent: linear-gradient(135deg, rgba(250, 204, 21, 0.03), transparent);
-
-            /* Admin theme colors (will be overridden by JS) */
-            --admin-primary: #0a1a2f;
-            --admin-secondary: #1e3a6b;
-            --admin-accent: #facc15;
-            --admin-bg: #f0f4f8;
         }
 
         /* ── Dark Theme ── */
@@ -717,6 +711,22 @@
             min-width: 80px;
         }
 
+        .settings-page .text-colors-section {
+            margin-top: 8px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .settings-page .text-colors-section .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
         .settings-page .settings-actions {
             display: flex;
             gap: 12px;
@@ -1315,6 +1325,43 @@
                         </div>
                     </div>
 
+                    <!-- Text Colors Section -->
+                    <div class="text-colors-section">
+                        <span class="section-label">✏️ Text Colors</span>
+
+                        <div class="color-group">
+                            <label>Primary Text Color (Headings)</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="colorTextPrimary" value="#0a1a2f" />
+                                <span class="color-hex" id="hexTextPrimary">#0a1a2f</span>
+                            </div>
+                        </div>
+
+                        <div class="color-group">
+                            <label>Secondary Text Color (Body)</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="colorTextSecondary" value="#1e293b" />
+                                <span class="color-hex" id="hexTextSecondary">#1e293b</span>
+                            </div>
+                        </div>
+
+                        <div class="color-group">
+                            <label>Muted Text Color (Subtle text)</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="colorTextMuted" value="#4a6a8a" />
+                                <span class="color-hex" id="hexTextMuted">#4a6a8a</span>
+                            </div>
+                        </div>
+
+                        <div class="color-group">
+                            <label>Light Text Color (Descriptions)</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="colorTextLight" value="#475569" />
+                                <span class="color-hex" id="hexTextLight">#475569</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div style="margin-top:16px;">
                         <label style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:8px;">
                             Quick Presets
@@ -1429,28 +1476,115 @@
             const colorSecondary = document.getElementById('colorSecondary');
             const colorAccent = document.getElementById('colorAccent');
             const colorBg = document.getElementById('colorBg');
+            const colorTextPrimary = document.getElementById('colorTextPrimary');
+            const colorTextSecondary = document.getElementById('colorTextSecondary');
+            const colorTextMuted = document.getElementById('colorTextMuted');
+            const colorTextLight = document.getElementById('colorTextLight');
+
             const hexPrimary = document.getElementById('hexPrimary');
             const hexSecondary = document.getElementById('hexSecondary');
             const hexAccent = document.getElementById('hexAccent');
             const hexBg = document.getElementById('hexBg');
+            const hexTextPrimary = document.getElementById('hexTextPrimary');
+            const hexTextSecondary = document.getElementById('hexTextSecondary');
+            const hexTextMuted = document.getElementById('hexTextMuted');
+            const hexTextLight = document.getElementById('hexTextLight');
+
             const applyColors = document.getElementById('applyColors');
             const resetColors = document.getElementById('resetColors');
 
             let isAdmin = false;
 
+            // ── Theme Colors for Light & Dark ──
+            const themeColors = {
+                light: {
+                    primary: '#0a1a2f',
+                    secondary: '#1e3a6b',
+                    accent: '#facc15',
+                    bg: '#f0f4f8',
+                    textPrimary: '#0a1a2f',
+                    textSecondary: '#1e293b',
+                    textMuted: '#4a6a8a',
+                    textLight: '#475569'
+                },
+                dark: {
+                    primary: '#0a1428',
+                    secondary: '#2a4a7a',
+                    accent: '#facc15',
+                    bg: '#0a1428',
+                    textPrimary: '#eef3f9',
+                    textSecondary: '#d0dce8',
+                    textMuted: '#8aa8c8',
+                    textLight: '#b8cce0'
+                }
+            };
+
             // ── Theme Toggle ──
             function toggleTheme() {
                 const html = document.documentElement;
-                const currentTheme = html.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                const current = html.getAttribute('data-theme');
+                const newTheme = current === 'dark' ? 'light' : 'dark';
                 html.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
 
                 const icon = newTheme === 'dark' ? '☀️' : '🌙';
                 themeToggle.textContent = icon;
                 themeToggleMobile.textContent = icon;
+
+                // Check if custom colors exist for this theme
+                const savedCustom = localStorage.getItem('customColors');
+                if (savedCustom) {
+                    try {
+                        const colors = JSON.parse(savedCustom);
+                        if (colors.theme === newTheme) {
+                            applyCustomColorsToCSS(colors);
+                            updateAllColorPickers(colors);
+                            return;
+                        }
+                    } catch (e) { /* ignore */ }
+                }
+
+                // Otherwise use default theme colors
+                const defaultColors = themeColors[newTheme];
+                applyCustomColorsToCSS(defaultColors);
+                updateAllColorPickers(defaultColors);
             }
 
+            function applyCustomColorsToCSS(colors) {
+                const root = document.documentElement;
+                root.style.setProperty('--navy', colors.primary);
+                root.style.setProperty('--navy-light', colors.secondary);
+                root.style.setProperty('--navy-lighter', colors.secondary);
+                root.style.setProperty('--gold', colors.accent);
+                root.style.setProperty('--gold-dark', colors.accent);
+                root.style.setProperty('--bg-body', colors.bg);
+                root.style.setProperty('--text-primary', colors.textPrimary || colors.primary);
+                root.style.setProperty('--text-secondary', colors.textSecondary || colors.secondary);
+                root.style.setProperty('--text-muted', colors.textMuted || '#4a6a8a');
+                root.style.setProperty('--text-light', colors.textLight || '#475569');
+            }
+
+            function updateAllColorPickers(colors) {
+                colorPrimary.value = colors.primary;
+                colorSecondary.value = colors.secondary;
+                colorAccent.value = colors.accent;
+                colorBg.value = colors.bg;
+                colorTextPrimary.value = colors.textPrimary || colors.primary;
+                colorTextSecondary.value = colors.textSecondary || colors.secondary;
+                colorTextMuted.value = colors.textMuted || '#4a6a8a';
+                colorTextLight.value = colors.textLight || '#475569';
+
+                hexPrimary.textContent = colors.primary;
+                hexSecondary.textContent = colors.secondary;
+                hexAccent.textContent = colors.accent;
+                hexBg.textContent = colors.bg;
+                hexTextPrimary.textContent = colors.textPrimary || colors.primary;
+                hexTextSecondary.textContent = colors.textSecondary || colors.secondary;
+                hexTextMuted.textContent = colors.textMuted || '#4a6a8a';
+                hexTextLight.textContent = colors.textLight || '#475569';
+            }
+
+            // Load saved theme
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
             themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
@@ -1490,7 +1624,6 @@
                 const username = usernameInput.value.trim();
                 const password = passwordInput.value.trim();
 
-                // Only admin can login
                 if (username === 'admin' && password === 'shivu') {
                     isAdmin = true;
                     loginError.classList.remove('visible');
@@ -1501,33 +1634,19 @@
                     loginBtnMobile.innerHTML = '👑';
                     adminBadge.classList.add('visible');
 
-                    // Enable Settings link
                     settingsNavLink.classList.remove('disabled');
                     settingsNavLink.style.pointerEvents = 'auto';
                     settingsNavLink.style.opacity = '1';
 
-                    // Update color pickers with current theme colors
-                    const computed = getComputedStyle(document.documentElement);
-                    const primary = computed.getPropertyValue('--navy').trim() || '#0a1a2f';
-                    const secondary = computed.getPropertyValue('--navy-light').trim() || '#1e3a6b';
-                    const accent = computed.getPropertyValue('--gold').trim() || '#facc15';
-                    const bg = computed.getPropertyValue('--bg-body').trim() || '#f0f4f8';
-
-                    colorPrimary.value = primary;
-                    colorSecondary.value = secondary;
-                    colorAccent.value = accent;
-                    colorBg.value = bg;
-                    hexPrimary.textContent = primary;
-                    hexSecondary.textContent = secondary;
-                    hexAccent.textContent = accent;
-                    hexBg.textContent = bg;
+                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                    const defaultColors = themeColors[currentTheme];
+                    updateAllColorPickers(defaultColors);
 
                     closeModal();
                     loginForm.reset();
                     alert('👑 Welcome Admin! You now have access to Settings.');
 
                 } else if (username && password) {
-                    // Show error for non-admin users
                     loginError.classList.add('visible');
                     loginError.textContent = '❌ Access denied. Only admin can login.';
                 } else {
@@ -1542,62 +1661,71 @@
                 const secondary = colorSecondary.value;
                 const accent = colorAccent.value;
                 const bg = colorBg.value;
+                const textPrimary = colorTextPrimary.value;
+                const textSecondary = colorTextSecondary.value;
+                const textMuted = colorTextMuted.value;
+                const textLight = colorTextLight.value;
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
 
-                const root = document.documentElement;
-                root.style.setProperty('--navy', primary);
-                root.style.setProperty('--navy-light', secondary);
-                root.style.setProperty('--navy-lighter', secondary);
-                root.style.setProperty('--gold', accent);
-                root.style.setProperty('--gold-dark', accent);
-                root.style.setProperty('--bg-body', bg);
+                const colors = {
+                    primary,
+                    secondary,
+                    accent,
+                    bg,
+                    textPrimary,
+                    textSecondary,
+                    textMuted,
+                    textLight,
+                    theme: currentTheme
+                };
+                localStorage.setItem('customColors', JSON.stringify(colors));
 
-                const customColors = { primary, secondary, accent, bg };
-                localStorage.setItem('customColors', JSON.stringify(customColors));
+                applyCustomColorsToCSS(colors);
 
                 hexPrimary.textContent = primary;
                 hexSecondary.textContent = secondary;
                 hexAccent.textContent = accent;
                 hexBg.textContent = bg;
+                hexTextPrimary.textContent = textPrimary;
+                hexTextSecondary.textContent = textSecondary;
+                hexTextMuted.textContent = textMuted;
+                hexTextLight.textContent = textLight;
 
                 alert('✅ Colors applied successfully!');
             }
 
             function resetDefaultColors() {
                 const root = document.documentElement;
+                const currentTheme = root.getAttribute('data-theme') || 'light';
+
                 root.style.setProperty('--navy', '');
                 root.style.setProperty('--navy-light', '');
                 root.style.setProperty('--navy-lighter', '');
                 root.style.setProperty('--gold', '');
                 root.style.setProperty('--gold-dark', '');
                 root.style.setProperty('--bg-body', '');
+                root.style.setProperty('--text-primary', '');
+                root.style.setProperty('--text-secondary', '');
+                root.style.setProperty('--text-muted', '');
+                root.style.setProperty('--text-light', '');
 
                 localStorage.removeItem('customColors');
 
-                colorPrimary.value = '#0a1a2f';
-                colorSecondary.value = '#1e3a6b';
-                colorAccent.value = '#facc15';
-                colorBg.value = '#f0f4f8';
-                hexPrimary.textContent = '#0a1a2f';
-                hexSecondary.textContent = '#1e3a6b';
-                hexAccent.textContent = '#facc15';
-                hexBg.textContent = '#f0f4f8';
+                const defaultColors = themeColors[currentTheme];
+                updateAllColorPickers(defaultColors);
 
                 alert('↺ Colors reset to default!');
             }
 
             // ── Color input live preview ──
-            colorPrimary.addEventListener('input', function() {
-                hexPrimary.textContent = this.value;
-            });
-            colorSecondary.addEventListener('input', function() {
-                hexSecondary.textContent = this.value;
-            });
-            colorAccent.addEventListener('input', function() {
-                hexAccent.textContent = this.value;
-            });
-            colorBg.addEventListener('input', function() {
-                hexBg.textContent = this.value;
-            });
+            colorPrimary.addEventListener('input', function() { hexPrimary.textContent = this.value; });
+            colorSecondary.addEventListener('input', function() { hexSecondary.textContent = this.value; });
+            colorAccent.addEventListener('input', function() { hexAccent.textContent = this.value; });
+            colorBg.addEventListener('input', function() { hexBg.textContent = this.value; });
+            colorTextPrimary.addEventListener('input', function() { hexTextPrimary.textContent = this.value; });
+            colorTextSecondary.addEventListener('input', function() { hexTextSecondary.textContent = this.value; });
+            colorTextMuted.addEventListener('input', function() { hexTextMuted.textContent = this.value; });
+            colorTextLight.addEventListener('input', function() { hexTextLight.textContent = this.value; });
 
             // ── Apply / Reset buttons ──
             applyColors.addEventListener('click', applyCustomColors);
@@ -1606,28 +1734,76 @@
             // ── Load saved custom colors ──
             function loadSavedColors() {
                 const saved = localStorage.getItem('customColors');
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+
                 if (saved) {
                     try {
                         const colors = JSON.parse(saved);
-                        const root = document.documentElement;
-                        root.style.setProperty('--navy', colors.primary);
-                        root.style.setProperty('--navy-light', colors.secondary);
-                        root.style.setProperty('--navy-lighter', colors.secondary);
-                        root.style.setProperty('--gold', colors.accent);
-                        root.style.setProperty('--gold-dark', colors.accent);
-                        root.style.setProperty('--bg-body', colors.bg);
+                        if (colors.theme === currentTheme) {
+                            applyCustomColorsToCSS(colors);
+                            updateAllColorPickers(colors);
+                            return;
+                        }
                     } catch (e) { /* ignore */ }
                 }
+
+                const defaultColors = themeColors[currentTheme];
+                applyCustomColorsToCSS(defaultColors);
+                updateAllColorPickers(defaultColors);
             }
-            loadSavedColors();
 
             // ── Theme Presets ──
             const presets = {
-                default: { primary: '#0a1a2f', secondary: '#1e3a6b', accent: '#facc15', bg: '#f0f4f8' },
-                ocean: { primary: '#0c4a6e', secondary: '#0ea5e9', accent: '#38bdf8', bg: '#f0f9ff' },
-                forest: { primary: '#14532d', secondary: '#22c55e', accent: '#4ade80', bg: '#f0fdf4' },
-                sunset: { primary: '#7c2d12', secondary: '#f97316', accent: '#fb923c', bg: '#fff7ed' },
-                midnight: { primary: '#1e1b4b', secondary: '#6366f1', accent: '#818cf8', bg: '#f8fafc' }
+                default: {
+                    primary: '#0a1a2f',
+                    secondary: '#1e3a6b',
+                    accent: '#facc15',
+                    bg: '#f0f4f8',
+                    textPrimary: '#0a1a2f',
+                    textSecondary: '#1e293b',
+                    textMuted: '#4a6a8a',
+                    textLight: '#475569'
+                },
+                ocean: {
+                    primary: '#0c4a6e',
+                    secondary: '#0ea5e9',
+                    accent: '#38bdf8',
+                    bg: '#f0f9ff',
+                    textPrimary: '#0c4a6e',
+                    textSecondary: '#1e293b',
+                    textMuted: '#4a6a8a',
+                    textLight: '#475569'
+                },
+                forest: {
+                    primary: '#14532d',
+                    secondary: '#22c55e',
+                    accent: '#4ade80',
+                    bg: '#f0fdf4',
+                    textPrimary: '#14532d',
+                    textSecondary: '#1e293b',
+                    textMuted: '#4a6a8a',
+                    textLight: '#475569'
+                },
+                sunset: {
+                    primary: '#7c2d12',
+                    secondary: '#f97316',
+                    accent: '#fb923c',
+                    bg: '#fff7ed',
+                    textPrimary: '#7c2d12',
+                    textSecondary: '#1e293b',
+                    textMuted: '#4a6a8a',
+                    textLight: '#475569'
+                },
+                midnight: {
+                    primary: '#1e1b4b',
+                    secondary: '#6366f1',
+                    accent: '#818cf8',
+                    bg: '#f8fafc',
+                    textPrimary: '#1e1b4b',
+                    textSecondary: '#1e293b',
+                    textMuted: '#4a6a8a',
+                    textLight: '#475569'
+                }
             };
 
             document.querySelectorAll('.preset-btn').forEach(btn => {
@@ -1635,21 +1811,37 @@
                     const preset = this.dataset.preset;
                     const colors = presets[preset];
                     if (colors) {
-                        colorPrimary.value = colors.primary;
-                        colorSecondary.value = colors.secondary;
-                        colorAccent.value = colors.accent;
-                        colorBg.value = colors.bg;
-                        hexPrimary.textContent = colors.primary;
-                        hexSecondary.textContent = colors.secondary;
-                        hexAccent.textContent = colors.accent;
-                        hexBg.textContent = colors.bg;
-                        // Auto-apply
+                        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                        let presetColors = { ...colors };
+                        if (currentTheme === 'dark') {
+                            presetColors = {
+                                primary: darkenColor(colors.primary, 20),
+                                secondary: darkenColor(colors.secondary, 10),
+                                accent: colors.accent,
+                                bg: darkenColor(colors.bg, 30),
+                                textPrimary: colors.textPrimary ? darkenColor(colors.textPrimary, 10) : '#eef3f9',
+                                textSecondary: colors.textSecondary ? darkenColor(colors.textSecondary, 5) : '#d0dce8',
+                                textMuted: colors.textMuted ? darkenColor(colors.textMuted, 5) : '#8aa8c8',
+                                textLight: colors.textLight ? darkenColor(colors.textLight, 5) : '#b8cce0'
+                            };
+                        }
+                        updateAllColorPickers(presetColors);
                         applyCustomColors();
                     }
                 });
             });
 
-            // ── Navigation: Show Settings (Admin Only) ──
+            function darkenColor(hex, percent) {
+                let r = parseInt(hex.slice(1, 3), 16);
+                let g = parseInt(hex.slice(3, 5), 16);
+                let b = parseInt(hex.slice(5, 7), 16);
+                r = Math.max(0, r - percent);
+                g = Math.max(0, g - percent);
+                b = Math.max(0, b - percent);
+                return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+            }
+
+            // ── Navigation ──
             function showSettings() {
                 if (!isAdmin) {
                     alert('🔒 Access denied. Please login as admin to access Settings.');
@@ -1657,9 +1849,9 @@
                 }
                 dashboardView.style.display = 'none';
                 settingsView.classList.add('visible');
-                // Update active nav
                 navLinks.forEach(l => l.classList.remove('active'));
                 settingsNavLink.classList.add('active');
+                loadSavedColors();
             }
 
             function showDashboard() {
@@ -1713,7 +1905,6 @@
                         govNav.classList.remove('open');
                         hamburgerBtn.classList.remove('active');
                     }
-                    // Don't remove active class for settings if we're navigating
                     if (this.getAttribute('href') === '#') {
                         e.preventDefault();
                     }
@@ -1738,12 +1929,15 @@
             });
 
             // ── Init ──
+            loadSavedColors();
+
             console.log('🏛️ Government of India – Airfare Dashboard ready.');
             console.log('👑 Admin login: username = admin, password = shivu');
             console.log('🔒 Only admin can access Settings.');
+            console.log('✏️ Text color customization added!');
 
         })();
     </script>
 
 </body>
-  </html>
+                                </html>
