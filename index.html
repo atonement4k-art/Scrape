@@ -1,289 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Airfare Price Dashboard – 3 Routes × 5 Windows</title>
-    <style>
-        :root {
-            --primary: #1e3a8a;
-            --secondary: #3b82f6;
-            --background: #f8fafc;
-            --surface: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --border: #e2e8f0;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body {
-            background-color: var(--background);
-            color: var(--text-main);
-            padding: 30px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        header h1 {
-            color: var(--primary);
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-        header p {
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
-        .matrix-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--surface);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-        .matrix-table th, .matrix-table td {
-            padding: 15px 20px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-        }
-        .matrix-table th {
-            background-color: var(--primary);
-            color: white;
-            font-weight: 600;
-        }
-        .matrix-table tbody tr:hover {
-            background-color: #f1f5f9;
-        }
-        .clickable-cell {
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .clickable-cell:hover {
-            background-color: #dbeafe;
-        }
-        .avg-price {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        .sample-size {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            display: block;
-        }
-        .detail-section {
-            background: var(--surface);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .detail-section h2 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .detail-table th, .detail-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-        .detail-table th {
-            background-color: #f1f5f9;
-            color: var(--text-main);
-            font-weight: 600;
-        }
-        .error-message {
-            color: var(--accent-red);
-            font-weight: 600;
-        }
-        .loading {
-            color: var(--text-muted);
-            font-style: italic;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Airfare Price Dashboard</title>
+<style>
+:root{--primary:#1e3a8a;--secondary:#3b82f6;--background:#f8fafc;--surface:#fff;--text:#1e293b;--muted:#64748b;--green:#059669;--red:#dc2626;--border:#e2e8f0}
+*{box-sizing:border-box;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif}body{margin:0;background:var(--background);color:var(--text);padding:30px}.container{max-width:1300px;margin:auto}header{text-align:center;margin-bottom:24px}h1{color:var(--primary);margin:0 0 8px}header p{color:var(--muted);margin:0}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}.status{color:var(--muted);font-size:.9rem}.refresh{border:0;border-radius:8px;background:var(--primary);color:#fff;padding:10px 16px;cursor:pointer;font-weight:600}.refresh:hover{background:#172554}.card{background:var(--surface);border-radius:12px;box-shadow:0 4px 12px #0000000d;margin-bottom:24px;overflow:hidden}.route-header{padding:18px 20px;background:var(--primary);color:#fff}.route-header h2{margin:0;font-size:1.2rem}.route-header p{margin:6px 0 0;opacity:.85;font-size:.9rem}.matrix-table,.detail-table{width:100%;border-collapse:collapse}.matrix-table th,.matrix-table td{padding:14px 16px;text-align:center;border-bottom:1px solid var(--border)}.matrix-table th{background:#eff6ff;color:var(--primary);font-weight:700}.matrix-table td:first-child{text-align:left;font-weight:700;white-space:nowrap}.clickable-cell{cursor:pointer;transition:background .15s}.clickable-cell:hover{background:#dbeafe}.avg-price{display:block;font-size:1.1rem;font-weight:700;color:var(--primary)}.sample-size{display:block;color:var(--muted);font-size:.78rem;margin-top:4px}.empty{color:var(--muted);font-style:italic}.error{color:var(--red);font-weight:600}.detail-section{display:none;background:var(--surface);padding:20px;border-radius:12px;box-shadow:0 4px 12px #0000000d;margin-bottom:24px}.detail-section h2{color:var(--primary);margin:0 0 14px;font-size:1.25rem}.detail-table th,.detail-table td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--border)}.detail-table th{background:#f1f5f9}.pill{display:inline-block;background:#eef2ff;color:var(--primary);border-radius:999px;padding:3px 8px;font-size:.78rem;font-weight:600}.loading{padding:30px;text-align:center;color:var(--muted)}@media(max-width:800px){body{padding:14px}.matrix-table{font-size:.85rem}.matrix-table th,.matrix-table td{padding:10px 6px}.detail-table{font-size:.82rem;display:block;overflow-x:auto}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>✈️ Airfare Price Dashboard</h1>
-            <p>3 High‑Traffic Routes × 5 Advance Purchase Windows</p>
-        </header>
+<div class="container">
+<header>
+<h1>Airfare Price Dashboard</h1>
+<p>3 routes × 5 advance-purchase windows</p>
+</header>
+<div class="toolbar"><span class="status" id="status">Loading latest data…</span><button class="refresh" id="refreshButton">Refresh now</button></div>
+<div id="dashboard"><div class="loading">Loading target_day.json…</div></div>
+<section class="detail-section" id="detailSection">
+<h2 id="detailTitle"></h2>
+<table class="detail-table"><thead><tr><th>Flight number</th><th>Departure</th><th>Time slot</th><th>Arrival</th><th>Price</th><th>Baggage</th></tr></thead><tbody id="detailBody"></tbody></table>
+</section>
+</div>
+<script>
+// target_day.json must be committed to the same GitHub Pages repository/folder as this HTML file.
+const JSON_FILE = new URL('target_day.json', document.baseURI).href;
+const REFRESH_INTERVAL_MS = 30000;
+const WINDOWS = ['T_plus_1','T_plus_7','T_plus_15','T_plus_30','T_plus_45'];
+let dataCache = {};
 
-        <!-- Matrix Table -->
-        <table class="matrix-table" id="matrixTable">
-            <thead>
-                <tr>
-                    <th>Route</th>
-                    <th>T+1</th>
-                    <th>T+7</th>
-                    <th>T+15</th>
-                    <th>T+30</th>
-                    <th>T+45</th>
-                </tr>
-            </thead>
-            <tbody id="matrixBody">
-                <tr>
-                    <td colspan="6" class="loading">Loading data…</td>
-                </tr>
-            </tbody>
-        </table>
+function priceNumber(value) {
+    if (typeof value === 'number') return value;
+    if (!value) return null;
+    const number = Number(String(value).replace(/[^0-9.]/g, ''));
+    return Number.isFinite(number) ? number : null;
+}
+function displayWindow(key) { return key.replace('T_plus_', 'T+'); }
+function safeText(value) { return value === null || value === undefined || value === '' ? 'N/A' : String(value); }
 
-        <!-- Detail Section (hidden until cell click) -->
-        <div class="detail-section" id="detailSection" style="display: none;">
-            <h2 id="detailTitle"></h2>
-            <table class="detail-table" id="detailTable">
-                <thead>
-                    <tr>
-                        <th>Airline</th>
-                        <th>Flight No.</th>
-                        <th>Departure</th>
-                        <th>arrival</th>
-                        <th>Total Fare (₹)</th>
-                        <th>Base Fare (₹)</th>
-                        <th>fare tax</th>
-                        <th>baggage</th>
-                    </tr>
-                </thead>
-                <tbody id="detailBody"></tbody>
-            </table>
-        </div>
-    </div>
+async function loadData() {
+    const response = await fetch(`${JSON_FILE}?cache_bust=${Date.now()}`, {
+        cache: 'no-store'
+    });
+    if (!response.ok) throw new Error(`Could not load ${JSON_FILE} (${response.status})`);
+    return response.json();
+}
+function averagePrice(flights) {
+    const prices = flights.map(f => priceNumber(f.price)).filter(v => v !== null);
+    return prices.length ? prices.reduce((a,b) => a+b, 0) / prices.length : null;
+}
+function renderDashboard(payload) {
+    const dashboard = document.getElementById('dashboard');
+    dashboard.innerHTML = '';
+    dataCache = {};
+    const routes = Array.isArray(payload.routes) ? payload.routes : [];
+    if (!routes.length) { dashboard.innerHTML = '<div class="card loading">No route data found in target_day.json.</div>'; return; }
 
-    <script>
-        // ============================================
-        // CONFIGURATION
-        // ============================================
-        const routes = ['DEL-BOM', 'BOM-BLR', 'DEL-BLR'];
-        const windows = ['T+1', 'T+7', 'T+15', 'T+30', 'T+45'];
-
-        // ============================================
-        // DATA LOADING
-        // ============================================
-        async function loadAllData() {
-            const dataCache = {}; // key: "route_window", value: array of flights
-            const averageCache = {}; // key: "route_window", value: {avg, count}
-
-            const fetchPromises = [];
-            routes.forEach(route => {
-                windows.forEach(window => {
-                    const fileName = `${route}_${window}.json`;
-                    const key = `${route}_${window}`;
-                    fetchPromises.push(
-                        fetch(fileName)
-                            .then(response => {
-                                if (!response.ok) throw new Error(`File not found: ${fileName}`);
-                                return response.json();
-                            })
-                            .then(data => {
-                                dataCache[key] = data;
-                                if (Array.isArray(data) && data.length > 0) {
-                                    const totalFares = data.map(f => f.total_fare).filter(v => v !== undefined);
-                                    const avg = totalFares.reduce((a, b) => a + b, 0) / totalFares.length;
-                                    averageCache[key] = { avg: avg, count: data.length };
-                                } else {
-                                    averageCache[key] = { avg: 0, count: 0 };
-                                }
-                            })
-                            .catch(error => {
-                                console.warn(error.message);
-                                averageCache[key] = { avg: null, count: 0 };
-                                dataCache[key] = [];
-                            })
-                    );
-                });
-            });
-
-            await Promise.all(fetchPromises);
-            return { dataCache, averageCache };
-        }
-
-        // ============================================
-        // RENDER MATRIX
-        // ============================================
-        function renderMatrix(averageCache) {
-            const tbody = document.getElementById('matrixBody');
-            tbody.innerHTML = '';
-            routes.forEach(route => {
-                const tr = document.createElement('tr');
-                const routeCell = document.createElement('td');
-                routeCell.textContent = route;
-                routeCell.style.fontWeight = 'bold';
-                tr.appendChild(routeCell);
-
-                windows.forEach(window => {
-                    const key = `${route}_${window}`;
-                    const info = averageCache[key];
-                    const td = document.createElement('td');
-                    td.className = 'clickable-cell';
-                    if (info && info.avg !== null) {
-                        td.innerHTML = `<span class="avg-price">₹${info.avg.toFixed(0)}</span>
-                                        <span class="sample-size">${info.count} flights</span>`;
-                        td.addEventListener('click', () => showDetails(route, window, dataCache[key]));
-                    } else {
-                        td.innerHTML = `<span class="error-message">Data not available</span>`;
-                    }
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-            });
-        }
-
-        // ============================================
-        // SHOW DETAILS ON CLICK
-        // ============================================
-        function showDetails(route, window, flights) {
-            const detailSection = document.getElementById('detailSection');
-            const detailTitle = document.getElementById('detailTitle');
-            const detailBody = document.getElementById('detailBody');
-
-            detailTitle.textContent = `${route} – ${window} Window (${flights.length} flights)`;
-            detailBody.innerHTML = '';
-
-            if (flights.length === 0) {
-                detailBody.innerHTML = '<tr><td colspan="5" class="error-message">No flight data available.</td></tr>';
-            } else {
-                flights.forEach(f => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${f.airline || 'N/A'}</td>
-                        <td>${f.flight_no || 'N/A'}</td>
-                        <td>${f.departure_time || 'N/A'}</td>
-                        <td>${f.arrival_time || 'N/A'}</td>
-                        <td>₹${f.total_fare ? f.total_fare.toLocaleString() : 'N/A'}</td>
-                        <td>₹${f.base_fare ? f.base_fare.toLocaleString() : 'N/A'}</td>
-                        <td>₹${f.fare_tax ? f.fare_tax.toLocaleString() : 'N/A'}</td>
-                        <td>${f.baggage || 'N/A'}</td>
-                    `;
-                    detailBody.appendChild(tr);
-                });
-            }
-            detailSection.style.display = 'block';
-            detailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        // ============================================
-        // INIT
-        // ============================================
-        let dataCache; // store globally for detail view
-
-        async function init() {
-            const result = await loadAllData();
-            dataCache = result.dataCache;
-            renderMatrix(result.averageCache);
-        }
-
-        init();
-    </script>
+    routes.forEach(routeData => {
+        const routeCard = document.createElement('section'); routeCard.className = 'card';
+        const header = document.createElement('div'); header.className = 'route-header';
+        const title = document.createElement('h2'); title.textContent = routeData.route_name || 'Unnamed route';
+        const subtitle = document.createElement('p'); subtitle.textContent = `${routeData.run_date_T ? `Run date T: ${routeData.run_date_T} · ` : ''}${routeData.route || ''}`;
+        header.append(title, subtitle); routeCard.appendChild(header);
+        const table = document.createElement('table'); table.className = 'matrix-table';
+        const thead = document.createElement('thead'); const headRow = document.createElement('tr');
+        ['Time window', ...WINDOWS].forEach((label, i) => { const th=document.createElement('th'); th.textContent=i===0?'Route':displayWindow(label); headRow.appendChild(th); });
+        thead.appendChild(headRow); table.appendChild(thead);
+        const tbody = document.createElement('tbody'); const row = document.createElement('tr');
+        const routeCell=document.createElement('td'); routeCell.textContent=routeData.route_name || 'Route'; row.appendChild(routeCell);
+        WINDOWS.forEach(window => {
+            const cell=document.createElement('td'); cell.className='clickable-cell';
+            const result=(routeData.results||{})[window]; const flights=result && Array.isArray(result.flights) ? result.flights : [];
+            const key=`${routeData.route_name}_${window}`; dataCache[key]=flights;
+            const avg=averagePrice(flights);
+            if (avg !== null) { const price=document.createElement('span'); price.className='avg-price'; price.textContent=`₹${Math.round(avg).toLocaleString('en-IN')}`; const count=document.createElement('span'); count.className='sample-size'; count.textContent=`${flights.length} flights`; cell.append(price,count); cell.addEventListener('click',()=>showDetails(routeData.route_name,window,flights,result?.requested_date)); }
+            else { cell.textContent='No data'; cell.classList.add('empty'); }
+            row.appendChild(cell);
+        });
+        tbody.appendChild(row); table.appendChild(tbody); routeCard.appendChild(table); dashboard.appendChild(routeCard);
+    });
+}
+function showDetails(route, window, flights, requestedDate) {
+    const section=document.getElementById('detailSection'), title=document.getElementById('detailTitle'), body=document.getElementById('detailBody');
+    title.textContent=`${route} – ${displayWindow(window)} (${requestedDate || 'date unavailable'}) · ${flights.length} flights`; body.innerHTML='';
+    if (!flights.length) { const tr=document.createElement('tr'); const td=document.createElement('td'); td.colSpan=6; td.className='error'; td.textContent='No flight data available.'; tr.appendChild(td); body.appendChild(tr); }
+    flights.forEach(f => { const tr=document.createElement('tr'); [f.flight_number,f.departure_time,f.time_slot,f.arrival_time,f.price,f.baggage].forEach((value,index)=>{ const td=document.createElement('td'); td.textContent=safeText(value); if(index===2 && value){const span=document.createElement('span');span.className='pill';span.textContent=value;td.textContent='';td.appendChild(span)} tr.appendChild(td); }); body.appendChild(tr); });
+    section.style.display='block'; section.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function refresh() {
+    const status=document.getElementById('status'); status.textContent='Loading latest target_day.json…';
+    try { const payload=await loadData(); renderDashboard(payload); status.textContent=`Updated: ${new Date().toLocaleString()} · ${payload.routes?.length || 0} routes`; }
+    catch(error) { document.getElementById('dashboard').innerHTML=''; const div=document.createElement('div'); div.className='card error loading'; div.textContent=`${error.message}. Confirm that target_day.json is committed and published in the same GitHub Pages folder as this page.`; document.getElementById('dashboard').appendChild(div); status.textContent='Update failed'; }
+}
+document.getElementById('refreshButton').addEventListener('click', refresh); refresh(); setInterval(refresh, REFRESH_INTERVAL_MS);
+</script>
 </body>
 </html>
