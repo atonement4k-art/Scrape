@@ -17,100 +17,26 @@
             --border: #e2e8f0;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body {
-            background-color: var(--background);
-            color: var(--text-main);
-            padding: 30px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        header h1 {
-            color: var(--primary);
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-        header p {
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
-        .matrix-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--surface);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-        .matrix-table th, .matrix-table td {
-            padding: 15px 20px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-        }
-        .matrix-table th {
-            background-color: var(--primary);
-            color: white;
-            font-weight: 600;
-        }
-        .matrix-table tbody tr:hover {
-            background-color: #f1f5f9;
-        }
-        .clickable-cell {
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .clickable-cell:hover {
-            background-color: #dbeafe;
-        }
-        .avg-price {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        .sample-size {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            display: block;
-        }
-        .detail-section {
-            background: var(--surface);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .detail-section h2 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .detail-table th, .detail-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-        .detail-table th {
-            background-color: #f1f5f9;
-            color: var(--text-main);
-            font-weight: 600;
-        }
-        .error-message {
-            color: var(--accent-red);
-            font-weight: 600;
-        }
-        .loading {
-            color: var(--text-muted);
-            font-style: italic;
-        }
+        body { background-color: var(--background); color: var(--text-main); padding: 30px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; }
+        header h1 { color: var(--primary); font-size: 2rem; margin-bottom: 8px; }
+        header p { color: var(--text-muted); font-size: 1rem; }
+        .matrix-table { width: 100%; border-collapse: collapse; background: var(--surface); box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-radius: 12px; overflow: hidden; margin-bottom: 30px; }
+        .matrix-table th, .matrix-table td { padding: 15px 20px; text-align: center; border-bottom: 1px solid var(--border); }
+        .matrix-table th { background-color: var(--primary); color: white; font-weight: 600; }
+        .matrix-table tbody tr:hover { background-color: #f1f5f9; }
+        .clickable-cell { cursor: pointer; transition: background 0.2s; }
+        .clickable-cell:hover { background-color: #dbeafe; }
+        .avg-price { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+        .sample-size { font-size: 0.8rem; color: var(--text-muted); display: block; }
+        .detail-section { background: var(--surface); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 30px; }
+        .detail-section h2 { color: var(--primary); margin-bottom: 15px; font-size: 1.3rem; }
+        .detail-table { width: 100%; border-collapse: collapse; }
+        .detail-table th, .detail-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        .detail-table th { background-color: #f1f5f9; color: var(--text-main); font-weight: 600; }
+        .error-message { color: var(--accent-red); font-weight: 600; }
+        .loading { color: var(--text-muted); font-style: italic; }
     </style>
 </head>
 <body>
@@ -120,7 +46,6 @@
             <p>3 High‑Traffic Routes × 5 Advance Purchase Windows</p>
         </header>
 
-        <!-- Matrix Table -->
         <table class="matrix-table" id="matrixTable">
             <thead>
                 <tr>
@@ -133,13 +58,10 @@
                 </tr>
             </thead>
             <tbody id="matrixBody">
-                <tr>
-                    <td colspan="6" class="loading">Loading data…</td>
-                </tr>
+                <tr><td colspan="6" class="loading">Loading data…</td></tr>
             </tbody>
         </table>
 
-        <!-- Detail Section (hidden until cell click) -->
         <div class="detail-section" id="detailSection" style="display: none;">
             <h2 id="detailTitle"></h2>
             <table class="detail-table" id="detailTable">
@@ -148,9 +70,11 @@
                         <th>Airline</th>
                         <th>Flight No.</th>
                         <th>Departure</th>
-                        <th>arrival</th>
+                        <th>Arrival</th>
                         <th>Total Fare (₹)</th>
                         <th>Base Fare (₹)</th>
+                        <th>Tax (₹)</th>
+                        <th>Baggage</th>
                     </tr>
                 </thead>
                 <tbody id="detailBody"></tbody>
@@ -169,8 +93,8 @@
         // DATA LOADING
         // ============================================
         async function loadAllData() {
-            const dataCache = {}; // key: "route_window", value: array of flights
-            const averageCache = {}; // key: "route_window", value: {avg, count}
+            const dataCache = {};
+            const averageCache = {};
 
             const fetchPromises = [];
             routes.forEach(route => {
@@ -190,7 +114,7 @@
                                     const avg = totalFares.reduce((a, b) => a + b, 0) / totalFares.length;
                                     averageCache[key] = { avg: avg, count: data.length };
                                 } else {
-                                    averageCache[key] = { avg: 0, count: 0 };
+                                    averageCache[key] = { avg: null, count: 0 };
                                 }
                             })
                             .catch(error => {
@@ -249,7 +173,7 @@
             detailBody.innerHTML = '';
 
             if (flights.length === 0) {
-                detailBody.innerHTML = '<tr><td colspan="5" class="error-message">No flight data available.</td></tr>';
+                detailBody.innerHTML = '<tr><td colspan="8" class="error-message">No flight data available.</td></tr>';
             } else {
                 flights.forEach(f => {
                     const tr = document.createElement('tr');
@@ -260,6 +184,8 @@
                         <td>${f.arrival_time || 'N/A'}</td>
                         <td>₹${f.total_fare ? f.total_fare.toLocaleString() : 'N/A'}</td>
                         <td>₹${f.base_fare ? f.base_fare.toLocaleString() : 'N/A'}</td>
+                        <td>₹${f.taxes ? f.taxes.toLocaleString() : 'N/A'}</td>
+                        <td>${f.baggage || 'N/A'}</td>
                     `;
                     detailBody.appendChild(tr);
                 });
@@ -271,7 +197,7 @@
         // ============================================
         // INIT
         // ============================================
-        let dataCache; // store globally for detail view
+        let dataCache;
 
         async function init() {
             const result = await loadAllData();
