@@ -152,6 +152,7 @@
                         <th>Total Fare (₹)</th>
                         <th>Base Fare (₹)</th>
                         <th>fare tax</th>
+                        <th>baggage</th>
                     </tr>
                 </thead>
                 <tbody id="detailBody"></tbody>
@@ -262,6 +263,7 @@
                         <td>₹${f.total_fare ? f.total_fare.toLocaleString() : 'N/A'}</td>
                         <td>₹${f.base_fare ? f.base_fare.toLocaleString() : 'N/A'}</td>
                         <td>₹${f.fare_tax ? f.fare_tax.toLocaleString() : 'N/A'}</td>
+                        <td>${f.baggage || 'N/A'}</td>
                     `;
                     detailBody.appendChild(tr);
                 });
