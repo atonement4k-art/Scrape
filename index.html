@@ -1144,12 +1144,12 @@
             </div>
             <div class="right">
                 <span class="badge">🔒 Official</span>
-                <span class="admin-badge" id="adminBadge">👑 ADMIN</span>
-                <span>📅 04 Sep 2026</span>
+                <span class="admin-badge" id="adminBadge">ADMIN</span>
+                <span> 04 Sep 2026</span>
 
                 <div class="header-actions">
                     <button class="btn-login" id="loginBtn" aria-label="Login">
-                        <span class="btn-text">🔑 Login</span>
+                        <span class="btn-text"> Login</span>
                         <span class="btn-icon" style="display:none;">👤</span>
                     </button>
                     <button class="btn-theme" id="themeToggle" aria-label="Toggle theme">
@@ -1161,16 +1161,16 @@
 
         <nav class="gov-nav" id="govNav">
             <a href="#" class="active" data-page="dashboard">
-                <span class="nav-icon">🏛️</span> Dashboard
+                <span class="nav-icon"></span> Dashboard
             </a>
             <a href="real_time_flight_price.html" data-page="live">
                 <span class="nav-icon">🛫</span> Live Flight Price
             </a>
             <a href="#" data-page="analytics">
-                <span class="nav-icon">📈</span> Analytics
+                <span class="nav-icon"></span> Analytics
             </a>
             <a href="#" data-page="reports">
-                <span class="nav-icon">📋</span> Reports
+                <span class="nav-icon"></span> Reports
             </a>
             <a href="#" data-page="settings" id="settingsNavLink" class="disabled">
                 <span class="nav-icon">⚙️</span> Settings
@@ -1228,13 +1228,13 @@
                 <div class="sub">
                     <span>Real-time price monitoring for 3 high-traffic routes</span>
                     <span class="tag">5 advance purchase windows</span>
-                    <span class="tag">📊 Live data</span>
+                    <span class="tag"> Live data</span>
                 </div>
             </div>
 
             <div class="content-grid">
                 <div class="content-card">
-                    <div class="card-icon">📊</div>
+                    <div class="card-icon"></div>
                     <h3>Route Price Matrix</h3>
                     <p>View average airfares across DEL-BOM, BOM-BLR, and DEL-BLR for T+1 to T+45 advance purchase windows.</p>
                     <div class="highlight-box">
@@ -1244,7 +1244,7 @@
                 </div>
 
                 <div class="content-card">
-                    <div class="card-icon">📈</div>
+                    <div class="card-icon"></div>
                     <h3>Market Overview</h3>
                     <p>Track price trends and flight availability across India's busiest domestic routes.</p>
                     <div class="stats-row">
@@ -1256,7 +1256,7 @@
                 </div>
 
                 <div class="content-card full-width">
-                    <div class="card-icon">🏛️</div>
+                    <div class="card-icon"></div>
                     <h3>About This Dashboard</h3>
                     <p>
                         This official Government of India dashboard provides real-time airfare data for three key domestic routes.
@@ -1267,7 +1267,6 @@
                         <strong>🔹 Advance purchase windows:</strong> T+1, T+7, T+15, T+30, T+45
                     </p>
                     <div class="highlight-box" style="margin-top:12px;">
-                        <strong>📌 Admin Access:</strong> Login with <strong>admin / shivu</strong> to access Settings.
                     </div>
                     <a href="real_time_flight_price.html" class="gov-link" style="margin-top:16px;">
                         🛫 Explore the Full Dashboard →
@@ -1281,14 +1280,14 @@
             <div class="settings-header">
                 <h2>
                     ⚙️ Settings
-                    <span class="admin-status">👑 ADMIN ONLY</span>
+                    <span class="admin-status"> ADMIN ONLY</span>
                 </h2>
                 <span style="font-size:0.8rem;color:var(--text-muted);">Customize your dashboard appearance</span>
             </div>
 
             <div class="settings-grid">
                 <div class="settings-card full-width">
-                    <h3>🎨 Theme Customization</h3>
+                    <h3> Theme Customization</h3>
                     <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">
                         Customize the color scheme of the dashboard. Changes are saved automatically.
                     </p>
@@ -1327,7 +1326,7 @@
 
                     <!-- Text Colors Section -->
                     <div class="text-colors-section">
-                        <span class="section-label">✏️ Text Colors</span>
+                        <span class="section-label"> Text Colors</span>
 
                         <div class="color-group">
                             <label>Primary Text Color (Headings)</label>
@@ -1408,12 +1407,12 @@
                         You are currently logged in as <strong style="color:var(--text-primary);">Admin</strong>
                     </p>
                     <button class="btn-login" id="logoutBtn" style="width:100%;text-align:center;background:#ff6b6b;color:#fff;border-color:#ff6b6b;padding:10px;">
-                        🚪 Logout
+                         Logout
                     </button>
                 </div>
 
                 <div class="settings-card">
-                    <h3>📊 Dashboard Info</h3>
+                    <h3> Dashboard Info</h3>
                     <div style="display:flex;flex-direction:column;gap:8px;font-size:0.85rem;">
                         <div><strong>Version:</strong> 2.1</div>
                         <div><strong>Data Source:</strong> target_day.json</div>
@@ -1629,9 +1628,9 @@
                     loginError.classList.remove('visible');
 
                     loginBtn.classList.add('admin-mode', 'logged-in');
-                    loginBtn.innerHTML = '👑 Admin';
+                    loginBtn.innerHTML = ' Admin';
                     loginBtnMobile.classList.add('admin-mode', 'logged-in');
-                    loginBtnMobile.innerHTML = '👑';
+                    loginBtnMobile.innerHTML = '';
                     adminBadge.classList.add('visible');
 
                     settingsNavLink.classList.remove('disabled');
@@ -1644,7 +1643,7 @@
 
                     closeModal();
                     loginForm.reset();
-                    alert('👑 Welcome Admin! You now have access to Settings.');
+                    alert(' Welcome Admin! You now have access to Settings.');
 
                 } else if (username && password) {
                     loginError.classList.add('visible');
@@ -1691,7 +1690,7 @@
                 hexTextMuted.textContent = textMuted;
                 hexTextLight.textContent = textLight;
 
-                alert('✅ Colors applied successfully!');
+                alert(' Colors applied successfully!');
             }
 
             function resetDefaultColors() {
@@ -1878,9 +1877,9 @@
                 if (confirm('Are you sure you want to logout?')) {
                     isAdmin = false;
                     loginBtn.classList.remove('admin-mode', 'logged-in');
-                    loginBtn.innerHTML = '🔑 Login';
+                    loginBtn.innerHTML = ' Login';
                     loginBtnMobile.classList.remove('admin-mode', 'logged-in');
-                    loginBtnMobile.innerHTML = '🔑';
+                    loginBtnMobile.innerHTML = '';
                     adminBadge.classList.remove('visible');
 
                     settingsNavLink.classList.add('disabled');
@@ -1888,7 +1887,7 @@
                     settingsNavLink.style.opacity = '0.4';
 
                     showDashboard();
-                    alert('👋 Logged out successfully.');
+                    alert(' Logged out successfully.');
                 }
             });
 
@@ -1931,13 +1930,13 @@
             // ── Init ──
             loadSavedColors();
 
-            console.log('🏛️ Government of India – Airfare Dashboard ready.');
-            console.log('👑 Admin login: username = admin, password = shivu');
-            console.log('🔒 Only admin can access Settings.');
-            console.log('✏️ Text color customization added!');
+            console.log(' Government of India – Airfare Dashboard ready.');
+            console.log(' Admin login: username = admin, password = shivu');
+            console.log(' Only admin can access Settings.');
+            console.log(' Text color customization added!');
 
         })();
     </script>
 
 </body>
-                                </html>
+</html>
