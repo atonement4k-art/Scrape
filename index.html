@@ -1,664 +1,1749 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="airfare price index" />
-  <title>Airfare Price Index</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Official Government of India – Airfare Price Index Dashboard" />
+    <title>Government of India | Airfare Price Index</title>
 
-  <!-- Google Font (Inter) for a modern look -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <!-- Google Font (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
 
-  <style>
-    /* ── reset & base ── */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <style>
+        /* ─────────────────────────────────────────────
+           CSS VARIABLES – Light & Dark Themes
+           ───────────────────────────────────────────── */
+        :root {
+            /* Light theme (default) */
+            --bg-body: #f0f4f8;
+            --bg-card: #ffffff;
+            --bg-header: #0a1a2f;
+            --bg-nav-hover: rgba(255, 255, 255, 0.06);
+            --bg-active: rgba(250, 204, 21, 0.06);
+            --bg-highlight: #f0f7ff;
+            --bg-stat: #f8fafc;
+            --bg-footer: #0a1a2f;
+            --bg-overlay: rgba(0, 0, 0, 0.35);
+            --bg-input: #ffffff;
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f6f9fc;
-      color: #0b1a33;
-      display: flex;
-      min-height: 100vh;
-    }
+            --text-primary: #0a1a2f;
+            --text-secondary: #1e293b;
+            --text-muted: #4a6a8a;
+            --text-light: #475569;
+            --text-white: #ffffff;
+            --text-nav: #c8d8ec;
+            --text-nav-hover: #ffffff;
+            --text-footer: #b8cbe0;
 
-    /* ── sidebar (3‑line) ── */
-    .sidebar {
-      width: 72px;
-      background: #0b1a33;
-      color: #eef4ff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 28px 0 20px;
-      flex-shrink: 0;
-      box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      transition: width 0.2s ease;
-      overflow: hidden;
-      z-index: 10;
-    }
+            --border-color: #e4ecf5;
+            --border-light: #dce6f0;
+            --border-header: rgba(255, 255, 255, 0.08);
 
-    /* on hover expand for readability (optional) */
-    .sidebar:hover {
-      width: 180px;
-    }
+            --gold: #facc15;
+            --gold-dark: #e6b800;
+            --gold-light: #fde68a;
+            --navy: #0a1a2f;
+            --navy-light: #1e3a6b;
+            --navy-lighter: #2a4a7a;
 
-    .sidebar .logo {
-      font-size: 1.6rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 40px;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+            --shadow-card: 0 4px 16px rgba(0, 20, 40, 0.05);
+            --shadow-card-hover: 0 8px 28px rgba(0, 20, 40, 0.08);
+            --shadow-header: 0 2px 12px rgba(0, 0, 0, 0.1);
 
-    .sidebar .logo span {
-      background: #facc15;
-      color: #0b1a33;
-      font-size: 0.9rem;
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-weight: 600;
-    }
+            --transition: 0.3s ease;
+            --card-accent: linear-gradient(135deg, rgba(250, 204, 21, 0.03), transparent);
 
-    .sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      width: 100%;
-      padding: 0 10px;
-    }
+            /* Admin theme colors (will be overridden by JS) */
+            --admin-primary: #0a1a2f;
+            --admin-secondary: #1e3a6b;
+            --admin-accent: #facc15;
+            --admin-bg: #f0f4f8;
+        }
 
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      color: #b6c9e0;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
+        /* ── Dark Theme ── */
+        [data-theme="dark"] {
+            --bg-body: #0a1428;
+            --bg-card: #132238;
+            --bg-header: #060e1e;
+            --bg-nav-hover: rgba(255, 255, 255, 0.06);
+            --bg-active: rgba(250, 204, 21, 0.08);
+            --bg-highlight: #1a2f4a;
+            --bg-stat: #0f1f35;
+            --bg-footer: #060e1e;
+            --bg-overlay: rgba(0, 0, 0, 0.7);
+            --bg-input: #0a1a2f;
 
-    .sidebar-nav a .icon {
-      font-size: 1.3rem;
-      line-height: 1;
-      min-width: 28px;
-      text-align: center;
-    }
+            --text-primary: #eef3f9;
+            --text-secondary: #d0dce8;
+            --text-muted: #8aa8c8;
+            --text-light: #b8cce0;
+            --text-white: #ffffff;
+            --text-nav: #9ab0cc;
+            --text-nav-hover: #ffffff;
+            --text-footer: #7a9abb;
 
-    .sidebar-nav a .label {
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
+            --border-color: #1e3450;
+            --border-light: #1a2f4a;
+            --border-header: rgba(255, 255, 255, 0.05);
 
-    .sidebar:hover .sidebar-nav a .label {
-      opacity: 1;
-    }
+            --gold: #facc15;
+            --gold-dark: #e6b800;
+            --gold-light: #fde68a;
+            --navy: #0a1a2f;
+            --navy-light: #2a4a7a;
+            --navy-lighter: #3a5a8a;
 
-    .sidebar-nav a:hover {
-      background: #1a3355;
-      color: #ffffff;
-    }
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-header: 0 2px 16px rgba(0, 0, 0, 0.5);
+            --card-accent: linear-gradient(135deg, rgba(250, 204, 21, 0.04), rgba(250, 204, 21, 0.01));
+        }
 
-    .sidebar-nav a.active {
-      background: #1e3a8a;
-      color: #ffffff;
-      box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
-    }
+        /* ─────────────────────────────────────────────
+           RESET & BASE
+           ───────────────────────────────────────────── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .sidebar-footer {
-      margin-top: auto;
-      font-size: 0.7rem;
-      color: #4a668a;
-      white-space: nowrap;
-      padding: 0 10px;
-      opacity: 0.6;
-    }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-secondary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background var(--transition), color var(--transition);
+        }
 
-    /* ── main content ── */
-    .main-content {
-      flex: 1;
-      padding: 30px 40px 40px;
-      max-width: calc(100% - 72px);
-      transition: padding 0.2s;
-    }
+        /* ─────────────────────────────────────────────
+           TOP HEADER
+           ───────────────────────────────────────────── */
+        .gov-header {
+            background: var(--bg-header);
+            color: var(--text-white);
+            padding: 0 32px;
+            border-bottom: 4px solid var(--gold);
+            box-shadow: var(--shadow-header);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background var(--transition), border-color var(--transition);
+        }
 
-    /* header inside main */
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 28px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
+        .gov-header .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-header);
+        }
 
-    .page-header h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #0b1a33;
-      letter-spacing: -0.5px;
-    }
+        .gov-header .header-top .left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
 
-    .page-header .badge {
-      background: #eef4ff;
-      color: #1e3a8a;
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 6px 16px;
-      border-radius: 40px;
-      border: 1px solid #d6e2f5;
-    }
+        .gov-header .header-top .left .flag {
+            font-size: 2rem;
+            line-height: 1;
+        }
 
-    /* ── card / dashboard area ── */
-    .dashboard-card {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 28px 30px 34px;
-      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.06);
-      border: 1px solid #eaf0f8;
-      margin-top: 8px;
-    }
+        .gov-header .header-top .left .title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text-white);
+        }
 
-    .dashboard-card .card-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #1e293b;
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+        .gov-header .header-top .left .title small {
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 400;
+            color: var(--text-nav);
+            letter-spacing: 0.3px;
+            margin-top: 1px;
+        }
 
-    .dashboard-card .card-title small {
-      font-weight: 400;
-      font-size: 0.8rem;
-      color: #64748b;
-    }
+        .gov-header .header-top .right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.75rem;
+            color: var(--text-nav);
+        }
 
-    /* ── matrix table (reused from your dashboard) ── */
-    .matrix-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
+        .gov-header .header-top .right .badge {
+            background: var(--gold);
+            color: var(--navy);
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+            transition: background var(--transition), color var(--transition);
+        }
 
-    .matrix-table th,
-    .matrix-table td {
-      padding: 14px 16px;
-      text-align: center;
-      border-bottom: 1px solid #eaf0f8;
-    }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .matrix-table th {
-      background: #f1f6fd;
-      color: #0b1a33;
-      font-weight: 600;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
+        .btn-login {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
 
-    .matrix-table th:first-child,
-    .matrix-table td:first-child {
-      text-align: left;
-      font-weight: 600;
-      color: #0b1a33;
-    }
+        .btn-login:hover {
+            background: var(--gold);
+            color: var(--navy);
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.2);
+        }
 
-    .matrix-table tbody tr:hover {
-      background: #f8faff;
-    }
+        .btn-login.logged-in {
+            background: var(--gold);
+            color: var(--navy);
+            border-color: var(--gold);
+        }
 
-    .clickable-cell {
-      cursor: pointer;
-      transition: background 0.15s;
-      border-radius: 8px;
-    }
+        .btn-login.logged-in:hover {
+            background: transparent;
+            color: var(--gold);
+            box-shadow: none;
+        }
 
-    .clickable-cell:hover {
-      background: #e6effb !important;
-    }
+        .btn-login.admin-mode {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
 
-    .clickable-cell .avg-price {
-      font-weight: 700;
-      color: #1e3a8a;
-      font-size: 1.1rem;
-      display: block;
-    }
+        .btn-login.admin-mode:hover {
+            background: #ff6b6b;
+            color: #fff;
+        }
 
-    .clickable-cell .sample-size {
-      font-size: 0.7rem;
-      color: #64748b;
-      display: block;
-      margin-top: 2px;
-    }
+        .btn-login.admin-mode.logged-in {
+            background: #ff6b6b;
+            color: #fff;
+            border-color: #ff6b6b;
+        }
 
-    .clickable-cell .no-data {
-      color: #b91c1c;
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
+        .btn-theme {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-white);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: inherit;
+            line-height: 1;
+            min-width: 38px;
+            min-height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    /* ── detail section (hidden by default) ── */
-    .detail-section {
-      margin-top: 30px;
-      background: #fafcff;
-      border-radius: 16px;
-      padding: 20px 24px 24px;
-      border: 1px solid #e2edf9;
-      display: none;
-    }
+        .btn-theme:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
 
-    .detail-section.visible {
-      display: block;
-      animation: fadeSlide 0.25s ease;
-    }
+        .admin-badge {
+            display: none;
+            background: #ff6b6b;
+            color: #fff;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            animation: pulse-badge 2s infinite;
+        }
 
-    @keyframes fadeSlide {
-      0% { opacity: 0; transform: translateY(8px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
+        .admin-badge.visible {
+            display: inline-block;
+        }
 
-    .detail-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
+        @keyframes pulse-badge {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
 
-    .detail-header h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #0b1a33;
-    }
+        /* ── horizontal navigation ── */
+        .gov-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 0 10px;
+            flex-wrap: wrap;
+        }
 
-    .detail-header .close-btn {
-      background: none;
-      border: none;
-      font-size: 1.4rem;
-      line-height: 1;
-      color: #94a3b8;
-      cursor: pointer;
-      padding: 0 6px;
-      transition: color 0.2s;
-    }
+        .gov-nav a {
+            color: var(--text-nav);
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.25s;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            cursor: pointer;
+        }
 
-    .detail-header .close-btn:hover {
-      color: #b91c1c;
-    }
+        .gov-nav a:hover {
+            color: var(--text-nav-hover);
+            background: var(--bg-nav-hover);
+        }
 
-    .detail-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
+        .gov-nav a.active {
+            color: var(--gold);
+            border-bottom-color: var(--gold);
+            background: var(--bg-active);
+        }
 
-    .detail-table th,
-    .detail-table td {
-      padding: 10px 12px;
-      text-align: left;
-      border-bottom: 1px solid #eaf0f8;
-    }
+        .gov-nav a.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
 
-    .detail-table th {
-      background: #f1f6fd;
-      font-weight: 600;
-      color: #1e293b;
-    }
+        .gov-nav a .nav-icon {
+            margin-right: 6px;
+        }
 
-    .detail-table .price-col {
-      font-weight: 600;
-      color: #1e3a8a;
-    }
+        /* ── hamburger (mobile) ── */
+        .hamburger-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-white);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            flex-direction: column;
+            gap: 5px;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            transition: background 0.2s;
+        }
 
-    .detail-table .no-flights {
-      text-align: center;
-      color: #b91c1c;
-      padding: 24px 0;
-    }
+        .hamburger-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
 
-    /* ── responsive ── */
-    @media (max-width: 820px) {
-      .sidebar {
-        width: 60px;
-        padding: 20px 0;
-      }
-      .sidebar:hover {
-        width: 160px;
-      }
-      .main-content {
-        padding: 20px 18px 30px;
-        max-width: calc(100% - 60px);
-      }
-      .page-header h1 {
-        font-size: 1.5rem;
-      }
-      .dashboard-card {
-        padding: 18px 14px 22px;
-      }
-      .matrix-table th,
-      .matrix-table td {
-        padding: 10px 8px;
-        font-size: 0.75rem;
-      }
-      .clickable-cell .avg-price {
-        font-size: 0.95rem;
-      }
-    }
+        .hamburger-btn .line {
+            display: block;
+            width: 24px;
+            height: 2.5px;
+            background: var(--text-white);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
 
-    @media (max-width: 500px) {
-      .sidebar {
-        width: 48px;
-      }
-      .sidebar:hover {
-        width: 140px;
-      }
-      .main-content {
-        padding: 14px 10px 20px;
-        max-width: calc(100% - 48px);
-      }
-      .page-header h1 {
-        font-size: 1.2rem;
-      }
-      .matrix-table th,
-      .matrix-table td {
-        padding: 6px 4px;
-        font-size: 0.65rem;
-      }
-      .clickable-cell .avg-price {
-        font-size: 0.8rem;
-      }
-      .detail-section {
-        padding: 14px 12px 18px;
-      }
-    }
-  </style>
+        .hamburger-btn.active .line:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+        .hamburger-btn.active .line:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        .hamburger-btn.active .line:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        .mobile-header-actions {
+            display: none;
+            gap: 6px;
+            align-items: center;
+        }
+
+        /* ─────────────────────────────────────────────
+           MAIN CONTENT
+           ───────────────────────────────────────────── */
+        .main-content {
+            flex: 1;
+            padding: 32px 40px 40px;
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+            transition: background var(--transition);
+        }
+
+        .page-heading {
+            margin-bottom: 28px;
+        }
+
+        .page-heading h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            transition: color var(--transition);
+        }
+
+        .page-heading .sub {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .page-heading .sub .tag {
+            background: var(--border-light);
+            color: var(--text-primary);
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        /* ── content grid ── */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 8px;
+        }
+
+        .content-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 28px 30px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gold);
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .content-card:hover::before {
+            opacity: 1;
+        }
+        .content-card:hover {
+            box-shadow: var(--shadow-card-hover);
+            transform: translateY(-2px);
+        }
+        .content-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .content-card .card-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .content-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            transition: color var(--transition);
+        }
+        .content-card p {
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 0.95rem;
+            transition: color var(--transition);
+        }
+
+        .content-card .gov-link {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 8px 22px;
+            background: var(--navy-light);
+            color: var(--text-white);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.25s;
+            border: 1px solid var(--navy-lighter);
+        }
+
+        .content-card .gov-link:hover {
+            background: var(--navy-lighter);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .content-card .gov-link.secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .content-card .gov-link.secondary:hover {
+            background: var(--bg-body);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .highlight-box {
+            background: var(--bg-highlight);
+            border-left: 4px solid var(--gold);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-top: 16px;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .highlight-box strong {
+            color: var(--text-primary);
+        }
+
+        .highlight-box code {
+            background: var(--border-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: background var(--transition), color var(--transition);
+            color: var(--text-secondary);
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .stats-row .stat {
+            background: var(--bg-stat);
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            flex: 1;
+            min-width: 100px;
+            transition: all var(--transition);
+        }
+
+        .stats-row .stat:hover {
+            border-color: var(--gold);
+            transform: translateY(-1px);
+        }
+
+        .stats-row .stat .num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: block;
+            transition: color var(--transition);
+        }
+
+        .stats-row .stat .lbl {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            transition: color var(--transition);
+        }
+
+        /* ─────────────────────────────────────────────
+           SETTINGS PAGE (Admin Only)
+           ───────────────────────────────────────────── */
+        .settings-page {
+            display: none;
+            animation: slideDown 0.4s ease;
+        }
+
+        .settings-page.visible {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .settings-page .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .settings-page .settings-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .settings-page .settings-header .admin-status {
+            font-size: 0.7rem;
+            background: #ff6b6b;
+            color: #fff;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-weight: 700;
+        }
+
+        .settings-page .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .settings-page .settings-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px 28px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            transition: all var(--transition);
+        }
+
+        .settings-page .settings-card:hover {
+            box-shadow: var(--shadow-card-hover);
+        }
+
+        .settings-page .settings-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .settings-page .settings-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-page .color-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .settings-page .color-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .settings-page .color-group .color-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-page .color-group input[type="color"] {
+            width: 44px;
+            height: 44px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 2px;
+            background: transparent;
+        }
+
+        .settings-page .color-group input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .settings-page .color-group input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 6px;
+        }
+
+        .settings-page .color-group .color-hex {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: monospace;
+            background: var(--bg-body);
+            padding: 4px 12px;
+            border-radius: 4px;
+            min-width: 80px;
+        }
+
+        .settings-page .settings-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .settings-page .settings-actions button {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: inherit;
+            border: none;
+        }
+
+        .settings-page .settings-actions .btn-apply {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .settings-page .settings-actions .btn-apply:hover {
+            background: var(--gold-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+        }
+
+        .settings-page .settings-actions .btn-reset {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .settings-page .settings-actions .btn-reset:hover {
+            background: var(--bg-body);
+        }
+
+        .settings-page .settings-actions .btn-back {
+            background: var(--navy-light);
+            color: var(--text-white);
+            margin-left: auto;
+        }
+
+        .settings-page .settings-actions .btn-back:hover {
+            background: var(--navy-lighter);
+            transform: translateY(-1px);
+        }
+
+        .settings-page .theme-presets {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .settings-page .theme-presets .preset-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.25s;
+            font-family: inherit;
+            color: var(--text-secondary);
+        }
+
+        .settings-page .theme-presets .preset-btn:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        .settings-page .theme-presets .preset-btn .preset-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* ── footer ── */
+        .gov-footer {
+            background: var(--bg-footer);
+            color: var(--text-footer);
+            padding: 18px 40px;
+            text-align: center;
+            font-size: 0.75rem;
+            border-top: 3px solid var(--gold);
+            margin-top: auto;
+            transition: all var(--transition);
+        }
+
+        .gov-footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .gov-footer .footer-links a {
+            color: var(--text-footer);
+            text-decoration: none;
+            transition: color 0.25s;
+        }
+
+        .gov-footer .footer-links a:hover {
+            color: var(--gold);
+        }
+
+        /* ── Login Modal ── */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-overlay);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .login-modal.open {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .login-modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 36px 40px 40px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            position: relative;
+            transition: all var(--transition);
+        }
+
+        .login-modal-content .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .login-modal-content .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .login-modal-content .modal-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .login-modal-content h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 6px;
+            transition: color var(--transition);
+        }
+
+        .login-modal-content .modal-sub {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+        }
+
+        .login-modal-content .form-group {
+            margin-bottom: 16px;
+        }
+
+        .login-modal-content .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            transition: color var(--transition);
+        }
+
+        .login-modal-content .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            transition: all 0.25s;
+        }
+
+        .login-modal-content .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.15);
+        }
+
+        .login-modal-content .form-group input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .login-modal-content .btn-submit {
+            width: 100%;
+            padding: 11px;
+            background: var(--gold);
+            color: var(--navy);
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: inherit;
+            margin-top: 4px;
+        }
+
+        .login-modal-content .btn-submit:hover {
+            background: var(--gold-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(250, 204, 21, 0.3);
+        }
+
+        .login-modal-content .modal-footer-text {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 16px;
+        }
+
+        .login-modal-content .error-msg {
+            display: none;
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            border-left: 3px solid #dc2626;
+        }
+
+        .login-modal-content .error-msg.visible {
+            display: block;
+        }
+
+        /* ─────────────────────────────────────────────
+           RESPONSIVE
+           ───────────────────────────────────────────── */
+        @media (max-width: 1024px) {
+            .content-grid,
+            .settings-page .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 820px) {
+            .gov-header {
+                padding: 0 20px;
+            }
+            .main-content {
+                padding: 24px 20px 30px;
+            }
+            .page-heading h1 {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger-btn {
+                display: flex;
+            }
+            .gov-nav {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px 0 14px;
+                gap: 2px;
+                border-top: 1px solid var(--border-header);
+            }
+            .gov-nav.open {
+                display: flex;
+            }
+            .gov-nav a {
+                padding: 10px 16px;
+                border-bottom: none;
+                border-left: 3px solid transparent;
+                border-radius: 0;
+            }
+            .gov-nav a.active {
+                border-bottom: none;
+                border-left-color: var(--gold);
+                background: var(--bg-active);
+            }
+            .gov-nav a:hover {
+                background: var(--bg-nav-hover);
+            }
+            .gov-header .header-top .left .title {
+                font-size: 0.95rem;
+            }
+            .gov-header .header-top .right .badge {
+                display: none;
+            }
+            .header-actions .btn-login .btn-text {
+                display: none;
+            }
+            .header-actions .btn-login {
+                padding: 6px 10px;
+                font-size: 1rem;
+            }
+            .mobile-header-actions {
+                display: flex;
+            }
+            .content-card {
+                padding: 20px 18px;
+            }
+            .settings-page .settings-card {
+                padding: 18px 16px;
+            }
+            .settings-page .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gov-header {
+                padding: 0 12px;
+            }
+            .gov-header .header-top .left .flag {
+                font-size: 1.5rem;
+            }
+            .gov-header .header-top .left .title {
+                font-size: 0.8rem;
+            }
+            .gov-header .header-top .left .title small {
+                font-size: 0.5rem;
+            }
+            .main-content {
+                padding: 16px 12px 24px;
+            }
+            .page-heading h1 {
+                font-size: 1.2rem;
+            }
+            .page-heading .sub {
+                font-size: 0.8rem;
+            }
+            .stats-row .stat {
+                min-width: 70px;
+                padding: 8px 12px;
+            }
+            .stats-row .stat .num {
+                font-size: 1rem;
+            }
+            .gov-footer {
+                padding: 14px 16px;
+                font-size: 0.65rem;
+            }
+            .gov-footer .footer-links {
+                gap: 12px;
+            }
+            .login-modal-content {
+                padding: 28px 20px 30px;
+            }
+            .settings-page .settings-actions .btn-back {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- ═══ SIDEBAR (3‑line) ═══ -->
-  <aside class="sidebar">
-    <div class="logo">
-      ✈<span>API</span>
-    </div>
-    <nav class="sidebar-nav">
-      <!-- 3 lines: each is a nav link. We embed "live flight price" as one of them -->
-      <a href="#" class="active">
-        <span class="icon">📊</span>
-        <span class="label">Dashboard</span>
-      </a>
-      <a href="real_time_flight_price.html">
-        <span class="icon">🛫</span>
-        <span class="label">Live flight price</span>
-      </a>
-      <a href="#">
-        <span class="icon">📈</span>
-        <span class="label">Analytics</span>
-      </a>
-    </nav>
-    <div class="sidebar-footer">v1.0</div>
-  </aside>
+    <!-- ════════════════════════════════════════════════════════════
+    HEADER
+    ════════════════════════════════════════════════════════════ -->
+    <header class="gov-header">
+        <div class="header-top">
+            <div class="left">
+                <span class="flag">🇮🇳</span>
+                <div class="title">
+                    Airfare Price Index
+                    <small>Ministry of Civil Aviation · Data Analytics Division</small>
+                </div>
+            </div>
+            <div class="right">
+                <span class="badge">🔒 Official</span>
+                <span class="admin-badge" id="adminBadge">👑 ADMIN</span>
+                <span>📅 04 Sep 2026</span>
 
-  <!-- ═══ MAIN CONTENT ═══ -->
-  <main class="main-content">
-
-    <!-- page header -->
-    <div class="page-header">
-      <h1>Airfare Price Index</h1>
-      <span class="badge">📅 3 routes · 5 windows</span>
-    </div>
-
-    <!-- dashboard card (reuses the airfare matrix) -->
-    <div class="dashboard-card">
-      <div class="card-title">
-        <span>✈️ Advance purchase matrix</span>
-        <small>click a cell for flight details</small>
-      </div>
-
-      <!-- matrix table -->
-      <table class="matrix-table" id="matrixTable">
-        <thead>
-          <tr>
-            <th>Route</th>
-            <th>T+1</th>
-            <th>T+7</th>
-            <th>T+15</th>
-            <th>T+30</th>
-            <th>T+45</th>
-          </tr>
-        </thead>
-        <tbody id="matrixBody">
-          <tr><td colspan="6" style="text-align:center; padding:30px; color:#64748b;">Loading data…</td></tr>
-        </tbody>
-      </table>
-
-      <!-- detail section (hidden until click) -->
-      <div class="detail-section" id="detailSection">
-        <div class="detail-header">
-          <h3 id="detailTitle">Route – Window</h3>
-          <button class="close-btn" id="detailCloseBtn" aria-label="Close details">✕</button>
+                <div class="header-actions">
+                    <button class="btn-login" id="loginBtn" aria-label="Login">
+                        <span class="btn-text">🔑 Login</span>
+                        <span class="btn-icon" style="display:none;">👤</span>
+                    </button>
+                    <button class="btn-theme" id="themeToggle" aria-label="Toggle theme">
+                        🌙
+                    </button>
+                </div>
+            </div>
         </div>
-        <table class="detail-table" id="detailTable">
-          <thead>
-            <tr>
-              <th>Flight</th>
-              <th>Departure</th>
-              <th>Arrival</th>
-              <th>Time slot</th>
-              <th>Price (₹)</th>
-            </tr>
-          </thead>
-          <tbody id="detailBody"></tbody>
-        </table>
-      </div>
+
+        <nav class="gov-nav" id="govNav">
+            <a href="#" class="active" data-page="dashboard">
+                <span class="nav-icon">🏛️</span> Dashboard
+            </a>
+            <a href="real_time_flight_price.html" data-page="live">
+                <span class="nav-icon">🛫</span> Live Flight Price
+            </a>
+            <a href="#" data-page="analytics">
+                <span class="nav-icon">📈</span> Analytics
+            </a>
+            <a href="#" data-page="reports">
+                <span class="nav-icon">📋</span> Reports
+            </a>
+            <a href="#" data-page="settings" id="settingsNavLink" class="disabled">
+                <span class="nav-icon">⚙️</span> Settings
+            </a>
+        </nav>
+
+        <div style="display:flex; align-items:center; gap:8px; padding-bottom:10px;">
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle navigation">
+                <span class="line"></span><span class="line"></span><span class="line"></span>
+            </button>
+            <div class="mobile-header-actions">
+                <button class="btn-login" id="loginBtnMobile" aria-label="Login" style="padding:6px 10px; font-size:1rem;">🔑</button>
+                <button class="btn-theme" id="themeToggleMobile" aria-label="Toggle theme" style="padding:6px 10px; font-size:1rem;">🌙</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════════════
+    LOGIN MODAL
+    ════════════════════════════════════════════════════════════ -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-modal-content">
+            <button class="modal-close" id="modalCloseBtn">✕</button>
+            <div class="modal-icon">🔑</div>
+            <h2>Admin Login</h2>
+            <p class="modal-sub">Enter your admin credentials</p>
+            <div class="error-msg" id="loginError">❌ Invalid credentials. Only admin can login.</div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="usernameInput">Username</label>
+                    <input type="text" id="usernameInput" placeholder="Enter username" required />
+                </div>
+                <div class="form-group">
+                    <label for="passwordInput">Password</label>
+                    <input type="password" id="passwordInput" placeholder="Enter password" required />
+                </div>
+                <button type="submit" class="btn-submit">Sign In</button>
+            </form>
+            <p class="modal-footer-text">
+                🔒 Secure · Official Government Portal<br />
+                <small style="color:var(--text-muted);opacity:0.6;">Admin: username = admin, password = shivu</small>
+            </p>
+        </div>
     </div>
 
-    <!-- optional extra content -->
-    <p style="margin-top: 24px; color: #64748b; font-size: 0.85rem; border-top: 1px solid #eaf0f8; padding-top: 20px;">
-      Data sourced from <code>target_day.json</code> · hover sidebar to expand
-    </p>
-  </main>
+    <!-- ════════════════════════════════════════════════════════════
+    MAIN CONTENT
+    ════════════════════════════════════════════════════════════ -->
+    <main class="main-content">
 
-  <!-- ═══ JAVASCRIPT ═══ -->
-  <script>
-    (function() {
-      'use strict';
+        <!-- ── DASHBOARD VIEW ── -->
+        <div id="dashboardView">
+            <div class="page-heading">
+                <h1>Welcome to the Airfare Dashboard</h1>
+                <div class="sub">
+                    <span>Real-time price monitoring for 3 high-traffic routes</span>
+                    <span class="tag">5 advance purchase windows</span>
+                    <span class="tag">📊 Live data</span>
+                </div>
+            </div>
 
-      // ── config ──
-      const JSON_FILE = 'target_day.json';
-      const WINDOW_MAP = {
-        'T_plus_1': 'T+1',
-        'T_plus_7': 'T+7',
-        'T_plus_15': 'T+15',
-        'T_plus_30': 'T+30',
-        'T_plus_45': 'T+45'
-      };
-      const WINDOW_ORDER = ['T_plus_1', 'T_plus_7', 'T_plus_15', 'T_plus_30', 'T_plus_45'];
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-icon">📊</div>
+                    <h3>Route Price Matrix</h3>
+                    <p>View average airfares across DEL-BOM, BOM-BLR, and DEL-BLR for T+1 to T+45 advance purchase windows.</p>
+                    <div class="highlight-box">
+                        <strong>💡 Quick tip:</strong> Click any cell in the matrix to see detailed flight information.
+                    </div>
+                    <a href="real_time_flight_price.html" class="gov-link">🛫 View Live Prices →</a>
+                </div>
 
-      // ── helpers ──
-      function parsePrice(str) {
-        if (!str) return NaN;
-        const cleaned = String(str).replace(/[₹,]/g, '').trim();
-        return parseFloat(cleaned);
-      }
+                <div class="content-card">
+                    <div class="card-icon">📈</div>
+                    <h3>Market Overview</h3>
+                    <p>Track price trends and flight availability across India's busiest domestic routes.</p>
+                    <div class="stats-row">
+                        <div class="stat"><span class="num">3</span><span class="lbl">Routes</span></div>
+                        <div class="stat"><span class="num">5</span><span class="lbl">Windows</span></div>
+                        <div class="stat"><span class="num">30+</span><span class="lbl">Flights / Route</span></div>
+                    </div>
+                    <a href="#" class="gov-link secondary">View Full Report →</a>
+                </div>
 
-      function formatPrice(num) {
-        if (!num || isNaN(num)) return 'N/A';
-        return '₹' + Math.round(num).toLocaleString('en-IN');
-      }
+                <div class="content-card full-width">
+                    <div class="card-icon">🏛️</div>
+                    <h3>About This Dashboard</h3>
+                    <p>
+                        This official Government of India dashboard provides real-time airfare data for three key domestic routes.
+                        The data is sourced from the <strong>Ministry of Civil Aviation</strong> and updated daily.
+                    </p>
+                    <p style="margin-top:8px;">
+                        <strong>🔹 Routes monitored:</strong> Delhi–Mumbai, Mumbai–Bengaluru, Delhi–Bengaluru<br />
+                        <strong>🔹 Advance purchase windows:</strong> T+1, T+7, T+15, T+30, T+45
+                    </p>
+                    <div class="highlight-box" style="margin-top:12px;">
+                        <strong>📌 Admin Access:</strong> Login with <strong>admin / shivu</strong> to access Settings.
+                    </div>
+                    <a href="real_time_flight_price.html" class="gov-link" style="margin-top:16px;">
+                        🛫 Explore the Full Dashboard →
+                    </a>
+                </div>
+            </div>
+        </div>
 
-      function computeAverage(flights) {
-        if (!flights || flights.length === 0) return null;
-        const prices = flights
-          .map(f => parsePrice(f.price))
-          .filter(v => !isNaN(v) && v > 0);
-        if (prices.length === 0) return null;
-        return prices.reduce((a, b) => a + b, 0) / prices.length;
-      }
+        <!-- ── SETTINGS VIEW (Admin Only) ── -->
+        <div class="settings-page" id="settingsView">
+            <div class="settings-header">
+                <h2>
+                    ⚙️ Settings
+                    <span class="admin-status">👑 ADMIN ONLY</span>
+                </h2>
+                <span style="font-size:0.8rem;color:var(--text-muted);">Customize your dashboard appearance</span>
+            </div>
 
-      function esc(str) {
-        if (!str) return '';
-        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      }
+            <div class="settings-grid">
+                <div class="settings-card full-width">
+                    <h3>🎨 Theme Customization</h3>
+                    <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">
+                        Customize the color scheme of the dashboard. Changes are saved automatically.
+                    </p>
 
-      // ── DOM refs ──
-      const matrixBody = document.getElementById('matrixBody');
-      const detailSection = document.getElementById('detailSection');
-      const detailTitle = document.getElementById('detailTitle');
-      const detailBody = document.getElementById('detailBody');
-      const closeBtn = document.getElementById('detailCloseBtn');
+                    <div class="color-group">
+                        <label>Primary Color (Header & Navigation)</label>
+                        <div class="color-input-wrap">
+                            <input type="color" id="colorPrimary" value="#0a1a2f" />
+                            <span class="color-hex" id="hexPrimary">#0a1a2f</span>
+                        </div>
+                    </div>
 
-      // ── load & render ──
-      async function loadData() {
-        try {
-          const resp = await fetch(JSON_FILE);
-          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-          const json = await resp.json();
-          return json;
-        } catch (err) {
-          console.error('Load error:', err);
-          matrixBody.innerHTML =
-            `<tr><td colspan="6" style="text-align:center;color:#b91c1c;padding:24px;">⚠️ Could not load <code>${JSON_FILE}</code></td></tr>`;
-          return null;
-        }
-      }
+                    <div class="color-group">
+                        <label>Secondary Color (Buttons & Accents)</label>
+                        <div class="color-input-wrap">
+                            <input type="color" id="colorSecondary" value="#1e3a6b" />
+                            <span class="color-hex" id="hexSecondary">#1e3a6b</span>
+                        </div>
+                    </div>
 
-      function buildMatrix(json) {
-        const routes = json.routes || [];
-        const result = {};
-        routes.forEach(route => {
-          const name = route.route_name || 'Unknown';
-          const results = route.results || {};
-          const routeData = {};
-          WINDOW_ORDER.forEach(key => {
-            const win = results[key] || null;
-            const flights = (win && win.flights) ? win.flights : [];
-            const avg = computeAverage(flights);
-            routeData[key] = {
-              avg: avg,
-              count: flights.length,
-              flights: flights,
-              requestedDate: win ? win.requested_date : null
-            };
-          });
-          result[name] = routeData;
-        });
-        return result;
-      }
+                    <div class="color-group">
+                        <label>Accent / Gold Color</label>
+                        <div class="color-input-wrap">
+                            <input type="color" id="colorAccent" value="#facc15" />
+                            <span class="color-hex" id="hexAccent">#facc15</span>
+                        </div>
+                    </div>
 
-      function renderMatrix(matrix) {
-        const tbody = matrixBody;
-        tbody.innerHTML = '';
-        const routeNames = Object.keys(matrix);
-        if (routeNames.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#b91c1c;padding:20px;">No route data found</td></tr>`;
-          return;
-        }
+                    <div class="color-group">
+                        <label>Background Color</label>
+                        <div class="color-input-wrap">
+                            <input type="color" id="colorBg" value="#f0f4f8" />
+                            <span class="color-hex" id="hexBg">#f0f4f8</span>
+                        </div>
+                    </div>
 
-        routeNames.forEach(routeName => {
-          const tr = document.createElement('tr');
-          const routeData = matrix[routeName];
+                    <div style="margin-top:16px;">
+                        <label style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:8px;">
+                            Quick Presets
+                        </label>
+                        <div class="theme-presets">
+                            <button class="preset-btn" data-preset="default">
+                                <span class="preset-dot" style="background:#0a1a2f;"></span>
+                                <span class="preset-dot" style="background:#facc15;"></span>
+                                Default
+                            </button>
+                            <button class="preset-btn" data-preset="ocean">
+                                <span class="preset-dot" style="background:#0c4a6e;"></span>
+                                <span class="preset-dot" style="background:#38bdf8;"></span>
+                                Ocean
+                            </button>
+                            <button class="preset-btn" data-preset="forest">
+                                <span class="preset-dot" style="background:#14532d;"></span>
+                                <span class="preset-dot" style="background:#4ade80;"></span>
+                                Forest
+                            </button>
+                            <button class="preset-btn" data-preset="sunset">
+                                <span class="preset-dot" style="background:#7c2d12;"></span>
+                                <span class="preset-dot" style="background:#fb923c;"></span>
+                                Sunset
+                            </button>
+                            <button class="preset-btn" data-preset="midnight">
+                                <span class="preset-dot" style="background:#1e1b4b;"></span>
+                                <span class="preset-dot" style="background:#818cf8;"></span>
+                                Midnight
+                            </button>
+                        </div>
+                    </div>
 
-          const nameCell = document.createElement('td');
-          nameCell.textContent = routeName;
-          tr.appendChild(nameCell);
+                    <div class="settings-actions">
+                        <button class="btn-apply" id="applyColors">✅ Apply Colors</button>
+                        <button class="btn-reset" id="resetColors">↺ Reset Default</button>
+                        <button class="btn-back" id="backToDashboard">← Back to Dashboard</button>
+                    </div>
+                </div>
 
-          WINDOW_ORDER.forEach(key => {
-            const td = document.createElement('td');
-            const info = routeData[key] || { avg: null, count: 0, flights: [] };
-            td.className = 'clickable-cell';
+                <div class="settings-card">
+                    <h3>🔐 Session Management</h3>
+                    <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">
+                        You are currently logged in as <strong style="color:var(--text-primary);">Admin</strong>
+                    </p>
+                    <button class="btn-login" id="logoutBtn" style="width:100%;text-align:center;background:#ff6b6b;color:#fff;border-color:#ff6b6b;padding:10px;">
+                        🚪 Logout
+                    </button>
+                </div>
 
-            if (info.avg !== null && info.count > 0) {
-              td.innerHTML = `
-                <span class="avg-price">${formatPrice(info.avg)}</span>
-                <span class="sample-size">${info.count} flight${info.count > 1 ? 's' : ''}</span>
-              `;
-              td.dataset.route = routeName;
-              td.dataset.window = key;
-              td.addEventListener('click', () => {
-                showDetail(routeName, key, info.flights);
-              });
-            } else {
-              td.innerHTML = `<span class="no-data">No data</span>`;
-              td.style.cursor = 'default';
+                <div class="settings-card">
+                    <h3>📊 Dashboard Info</h3>
+                    <div style="display:flex;flex-direction:column;gap:8px;font-size:0.85rem;">
+                        <div><strong>Version:</strong> 2.1</div>
+                        <div><strong>Data Source:</strong> target_day.json</div>
+                        <div><strong>Last Updated:</strong> 04 September 2026</div>
+                        <div><strong>Routes:</strong> 3</div>
+                        <div><strong>Windows:</strong> 5</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ════════════════════════════════════════════════════════════
+    FOOTER
+    ════════════════════════════════════════════════════════════ -->
+    <footer class="gov-footer">
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Use</a>
+            <a href="#">Contact Us</a>
+            <a href="#">Accessibility</a>
+            <a href="#">Sitemap</a>
+        </div>
+        <div>
+            © 2026 Government of India · Ministry of Civil Aviation &nbsp;|&nbsp; Data refreshed: 04 September 2026
+        </div>
+    </footer>
+
+    <!-- ════════════════════════════════════════════════════════════
+    JAVASCRIPT
+    ════════════════════════════════════════════════════════════ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ── DOM refs ──
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const govNav = document.getElementById('govNav');
+            const navLinks = document.querySelectorAll('.gov-nav a');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginBtnMobile = document.getElementById('loginBtnMobile');
+            const loginModal = document.getElementById('loginModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const loginForm = document.getElementById('loginForm');
+            const usernameInput = document.getElementById('usernameInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const loginError = document.getElementById('loginError');
+            const themeToggle = document.getElementById('themeToggle');
+            const themeToggleMobile = document.getElementById('themeToggleMobile');
+            const adminBadge = document.getElementById('adminBadge');
+            const settingsNavLink = document.getElementById('settingsNavLink');
+            const dashboardView = document.getElementById('dashboardView');
+            const settingsView = document.getElementById('settingsView');
+            const backToDashboard = document.getElementById('backToDashboard');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            // Color pickers
+            const colorPrimary = document.getElementById('colorPrimary');
+            const colorSecondary = document.getElementById('colorSecondary');
+            const colorAccent = document.getElementById('colorAccent');
+            const colorBg = document.getElementById('colorBg');
+            const hexPrimary = document.getElementById('hexPrimary');
+            const hexSecondary = document.getElementById('hexSecondary');
+            const hexAccent = document.getElementById('hexAccent');
+            const hexBg = document.getElementById('hexBg');
+            const applyColors = document.getElementById('applyColors');
+            const resetColors = document.getElementById('resetColors');
+
+            let isAdmin = false;
+
+            // ── Theme Toggle ──
+            function toggleTheme() {
+                const html = document.documentElement;
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+
+                const icon = newTheme === 'dark' ? '☀️' : '🌙';
+                themeToggle.textContent = icon;
+                themeToggleMobile.textContent = icon;
             }
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
-      }
 
-      function showDetail(routeName, windowKey, flights) {
-        const displayWindow = WINDOW_MAP[windowKey] || windowKey;
-        detailTitle.innerHTML = `${esc(routeName)} &mdash; <strong>${displayWindow}</strong> <span style="background:#eaf0f8;padding:2px 12px;border-radius:30px;font-size:0.75rem;font-weight:600;margin-left:8px;">${flights.length} flights</span>`;
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            themeToggleMobile.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 
-        detailBody.innerHTML = '';
-        if (!flights || flights.length === 0) {
-          detailBody.innerHTML = `<tr><td colspan="5" class="no-flights">No flight details available</td></tr>`;
-        } else {
-          flights.forEach(f => {
-            const tr = document.createElement('tr');
-            const flightLabel = f.flight_number || '—';
-            const dept = f.departure_time || '—';
-            const arr = f.arrival_time || '—';
-            const slot = f.time_slot || '—';
-            const price = f.price ? esc(f.price) : '—';
-            tr.innerHTML = `
-              <td><strong>${esc(flightLabel)}</strong></td>
-              <td>${esc(dept)}</td>
-              <td>${esc(arr)}</td>
-              <td>${esc(slot)}</td>
-              <td class="price-col">${price}</td>
-            `;
-            detailBody.appendChild(tr);
-          });
-        }
-        detailSection.classList.add('visible');
-        detailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+            themeToggle.addEventListener('click', toggleTheme);
+            themeToggleMobile.addEventListener('click', toggleTheme);
 
-      // ── close detail ──
-      closeBtn.addEventListener('click', () => {
-        detailSection.classList.remove('visible');
-      });
+            // ── Login Modal ──
+            function openModal() {
+                loginModal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                loginError.classList.remove('visible');
+            }
 
-      // close on click outside detail
-      document.addEventListener('click', (e) => {
-        if (detailSection.classList.contains('visible')) {
-          if (!detailSection.contains(e.target) && !e.target.closest('.clickable-cell')) {
-            detailSection.classList.remove('visible');
-          }
-        }
-      });
+            function closeModal() {
+                loginModal.classList.remove('open');
+                document.body.style.overflow = '';
+            }
 
-      // ── init ──
-      async function init() {
-        const json = await loadData();
-        if (json) {
-          const matrix = buildMatrix(json);
-          renderMatrix(matrix);
-        }
-      }
-      init();
+            loginBtn.addEventListener('click', openModal);
+            loginBtnMobile.addEventListener('click', openModal);
+            modalCloseBtn.addEventListener('click', closeModal);
 
-    })();
-  </script>
+            loginModal.addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && loginModal.classList.contains('open')) closeModal();
+            });
+
+            // ── Login Form Submit ──
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                // Only admin can login
+                if (username === 'admin' && password === 'shivu') {
+                    isAdmin = true;
+                    loginError.classList.remove('visible');
+
+                    loginBtn.classList.add('admin-mode', 'logged-in');
+                    loginBtn.innerHTML = '👑 Admin';
+                    loginBtnMobile.classList.add('admin-mode', 'logged-in');
+                    loginBtnMobile.innerHTML = '👑';
+                    adminBadge.classList.add('visible');
+
+                    // Enable Settings link
+                    settingsNavLink.classList.remove('disabled');
+                    settingsNavLink.style.pointerEvents = 'auto';
+                    settingsNavLink.style.opacity = '1';
+
+                    // Update color pickers with current theme colors
+                    const computed = getComputedStyle(document.documentElement);
+                    const primary = computed.getPropertyValue('--navy').trim() || '#0a1a2f';
+                    const secondary = computed.getPropertyValue('--navy-light').trim() || '#1e3a6b';
+                    const accent = computed.getPropertyValue('--gold').trim() || '#facc15';
+                    const bg = computed.getPropertyValue('--bg-body').trim() || '#f0f4f8';
+
+                    colorPrimary.value = primary;
+                    colorSecondary.value = secondary;
+                    colorAccent.value = accent;
+                    colorBg.value = bg;
+                    hexPrimary.textContent = primary;
+                    hexSecondary.textContent = secondary;
+                    hexAccent.textContent = accent;
+                    hexBg.textContent = bg;
+
+                    closeModal();
+                    loginForm.reset();
+                    alert('👑 Welcome Admin! You now have access to Settings.');
+
+                } else if (username && password) {
+                    // Show error for non-admin users
+                    loginError.classList.add('visible');
+                    loginError.textContent = '❌ Access denied. Only admin can login.';
+                } else {
+                    loginError.classList.add('visible');
+                    loginError.textContent = '❌ Please enter both username and password.';
+                }
+            });
+
+            // ── Admin Color Functions ──
+            function applyCustomColors() {
+                const primary = colorPrimary.value;
+                const secondary = colorSecondary.value;
+                const accent = colorAccent.value;
+                const bg = colorBg.value;
+
+                const root = document.documentElement;
+                root.style.setProperty('--navy', primary);
+                root.style.setProperty('--navy-light', secondary);
+                root.style.setProperty('--navy-lighter', secondary);
+                root.style.setProperty('--gold', accent);
+                root.style.setProperty('--gold-dark', accent);
+                root.style.setProperty('--bg-body', bg);
+
+                const customColors = { primary, secondary, accent, bg };
+                localStorage.setItem('customColors', JSON.stringify(customColors));
+
+                hexPrimary.textContent = primary;
+                hexSecondary.textContent = secondary;
+                hexAccent.textContent = accent;
+                hexBg.textContent = bg;
+
+                alert('✅ Colors applied successfully!');
+            }
+
+            function resetDefaultColors() {
+                const root = document.documentElement;
+                root.style.setProperty('--navy', '');
+                root.style.setProperty('--navy-light', '');
+                root.style.setProperty('--navy-lighter', '');
+                root.style.setProperty('--gold', '');
+                root.style.setProperty('--gold-dark', '');
+                root.style.setProperty('--bg-body', '');
+
+                localStorage.removeItem('customColors');
+
+                colorPrimary.value = '#0a1a2f';
+                colorSecondary.value = '#1e3a6b';
+                colorAccent.value = '#facc15';
+                colorBg.value = '#f0f4f8';
+                hexPrimary.textContent = '#0a1a2f';
+                hexSecondary.textContent = '#1e3a6b';
+                hexAccent.textContent = '#facc15';
+                hexBg.textContent = '#f0f4f8';
+
+                alert('↺ Colors reset to default!');
+            }
+
+            // ── Color input live preview ──
+            colorPrimary.addEventListener('input', function() {
+                hexPrimary.textContent = this.value;
+            });
+            colorSecondary.addEventListener('input', function() {
+                hexSecondary.textContent = this.value;
+            });
+            colorAccent.addEventListener('input', function() {
+                hexAccent.textContent = this.value;
+            });
+            colorBg.addEventListener('input', function() {
+                hexBg.textContent = this.value;
+            });
+
+            // ── Apply / Reset buttons ──
+            applyColors.addEventListener('click', applyCustomColors);
+            resetColors.addEventListener('click', resetDefaultColors);
+
+            // ── Load saved custom colors ──
+            function loadSavedColors() {
+                const saved = localStorage.getItem('customColors');
+                if (saved) {
+                    try {
+                        const colors = JSON.parse(saved);
+                        const root = document.documentElement;
+                        root.style.setProperty('--navy', colors.primary);
+                        root.style.setProperty('--navy-light', colors.secondary);
+                        root.style.setProperty('--navy-lighter', colors.secondary);
+                        root.style.setProperty('--gold', colors.accent);
+                        root.style.setProperty('--gold-dark', colors.accent);
+                        root.style.setProperty('--bg-body', colors.bg);
+                    } catch (e) { /* ignore */ }
+                }
+            }
+            loadSavedColors();
+
+            // ── Theme Presets ──
+            const presets = {
+                default: { primary: '#0a1a2f', secondary: '#1e3a6b', accent: '#facc15', bg: '#f0f4f8' },
+                ocean: { primary: '#0c4a6e', secondary: '#0ea5e9', accent: '#38bdf8', bg: '#f0f9ff' },
+                forest: { primary: '#14532d', secondary: '#22c55e', accent: '#4ade80', bg: '#f0fdf4' },
+                sunset: { primary: '#7c2d12', secondary: '#f97316', accent: '#fb923c', bg: '#fff7ed' },
+                midnight: { primary: '#1e1b4b', secondary: '#6366f1', accent: '#818cf8', bg: '#f8fafc' }
+            };
+
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const preset = this.dataset.preset;
+                    const colors = presets[preset];
+                    if (colors) {
+                        colorPrimary.value = colors.primary;
+                        colorSecondary.value = colors.secondary;
+                        colorAccent.value = colors.accent;
+                        colorBg.value = colors.bg;
+                        hexPrimary.textContent = colors.primary;
+                        hexSecondary.textContent = colors.secondary;
+                        hexAccent.textContent = colors.accent;
+                        hexBg.textContent = colors.bg;
+                        // Auto-apply
+                        applyCustomColors();
+                    }
+                });
+            });
+
+            // ── Navigation: Show Settings (Admin Only) ──
+            function showSettings() {
+                if (!isAdmin) {
+                    alert('🔒 Access denied. Please login as admin to access Settings.');
+                    return;
+                }
+                dashboardView.style.display = 'none';
+                settingsView.classList.add('visible');
+                // Update active nav
+                navLinks.forEach(l => l.classList.remove('active'));
+                settingsNavLink.classList.add('active');
+            }
+
+            function showDashboard() {
+                dashboardView.style.display = 'block';
+                settingsView.classList.remove('visible');
+                navLinks.forEach(l => l.classList.remove('active'));
+                document.querySelector('.gov-nav a[data-page="dashboard"]').classList.add('active');
+            }
+
+            settingsNavLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (isAdmin) {
+                    showSettings();
+                } else {
+                    alert('🔒 Access denied. Please login as admin to access Settings.');
+                    openModal();
+                }
+            });
+
+            backToDashboard.addEventListener('click', showDashboard);
+
+            // ── Logout ──
+            logoutBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to logout?')) {
+                    isAdmin = false;
+                    loginBtn.classList.remove('admin-mode', 'logged-in');
+                    loginBtn.innerHTML = '🔑 Login';
+                    loginBtnMobile.classList.remove('admin-mode', 'logged-in');
+                    loginBtnMobile.innerHTML = '🔑';
+                    adminBadge.classList.remove('visible');
+
+                    settingsNavLink.classList.add('disabled');
+                    settingsNavLink.style.pointerEvents = 'none';
+                    settingsNavLink.style.opacity = '0.4';
+
+                    showDashboard();
+                    alert('👋 Logged out successfully.');
+                }
+            });
+
+            // ── Mobile Nav Toggle ──
+            hamburgerBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                govNav.classList.toggle('open');
+                hamburgerBtn.classList.toggle('active');
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 768) {
+                        govNav.classList.remove('open');
+                        hamburgerBtn.classList.remove('active');
+                    }
+                    // Don't remove active class for settings if we're navigating
+                    if (this.getAttribute('href') === '#') {
+                        e.preventDefault();
+                    }
+                });
+            });
+
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    const header = document.querySelector('.gov-header');
+                    if (!header.contains(e.target)) {
+                        govNav.classList.remove('open');
+                        hamburgerBtn.classList.remove('active');
+                    }
+                }
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    govNav.classList.remove('open');
+                    hamburgerBtn.classList.remove('active');
+                }
+            });
+
+            // ── Init ──
+            console.log('🏛️ Government of India – Airfare Dashboard ready.');
+            console.log('👑 Admin login: username = admin, password = shivu');
+            console.log('🔒 Only admin can access Settings.');
+
+        })();
+    </script>
 
 </body>
-</html>
+  </html>
