@@ -1,126 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Airfare Price Dashboard – 3 Routes × 5 Windows</title>
     <style>
-        :root {
-            --primary: #1e3a8a;
-            --secondary: #3b82f6;
-            --background: #f8fafc;
-            --surface: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --border: #e2e8f0;
+        /* ── reset & base ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
         body {
-            background-color: var(--background);
-            color: var(--text-main);
+            background: #f8fafc;
+            color: #1e293b;
             padding: 30px;
         }
+
         .container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
         }
+
+        /* ── header ── */
         header {
             text-align: center;
             margin-bottom: 30px;
         }
+
         header h1 {
-            color: var(--primary);
+            color: #1e3a8a;
             font-size: 2rem;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
+
         header p {
-            color: var(--text-muted);
+            color: #64748b;
             font-size: 1rem;
         }
+
+        header .last-updated {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        /* ── matrix table ── */
         .matrix-table {
             width: 100%;
             border-collapse: collapse;
-            background: var(--surface);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-radius: 12px;
+            background: #ffffff;
+            border-radius: 14px;
             overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
             margin-bottom: 30px;
         }
-        .matrix-table th, .matrix-table td {
-            padding: 15px 20px;
+
+        .matrix-table th,
+        .matrix-table td {
+            padding: 16px 18px;
             text-align: center;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #e2e8f0;
         }
+
         .matrix-table th {
-            background-color: var(--primary);
+            background: #1e3a8a;
             color: white;
             font-weight: 600;
+            font-size: 0.95rem;
         }
+
+        .matrix-table th:first-child {
+            text-align: left;
+            padding-left: 24px;
+        }
+
         .matrix-table tbody tr:hover {
-            background-color: #f1f5f9;
+            background: #f1f5f9;
         }
+
+        .matrix-table tbody td:first-child {
+            font-weight: 700;
+            color: #1e3a8a;
+            text-align: left;
+            padding-left: 24px;
+        }
+
+        /* ── clickable cells ── */
         .clickable-cell {
             cursor: pointer;
             transition: background 0.2s;
+            border-radius: 6px;
+            padding: 10px 12px;
+            min-width: 80px;
         }
+
         .clickable-cell:hover {
-            background-color: #dbeafe;
+            background: #dbeafe !important;
         }
-        .avg-price {
+
+        .clickable-cell .avg-price {
             font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        .sample-size {
-            font-size: 0.8rem;
-            color: var(--text-muted);
+            font-weight: 700;
+            color: #1e3a8a;
             display: block;
         }
+
+        .clickable-cell .sample-size {
+            font-size: 0.75rem;
+            color: #64748b;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .clickable-cell .no-data {
+            color: #ef4444;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* ── detail section ── */
         .detail-section {
-            background: var(--surface);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            background: #ffffff;
+            padding: 24px 28px 28px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            margin-top: 10px;
+            display: none;
         }
+
+        .detail-section.visible {
+            display: block;
+            animation: fadeSlide 0.25s ease;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .detail-section .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
         .detail-section h2 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.3rem;
+            color: #1e3a8a;
+            font-size: 1.25rem;
+            font-weight: 600;
         }
+
+        .detail-section .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            line-height: 1;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0 6px;
+            transition: color 0.2s;
+        }
+
+        .detail-section .close-btn:hover {
+            color: #ef4444;
+        }
+
+        .detail-section .flight-count-badge {
+            background: #e2e8f0;
+            color: #1e293b;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 2px 14px;
+            border-radius: 20px;
+            margin-left: 12px;
+        }
+
+        /* ── detail table ── */
+        .detail-table-wrap {
+            overflow-x: auto;
+        }
+
         .detail-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.9rem;
         }
-        .detail-table th, .detail-table td {
-            padding: 12px 15px;
+
+        .detail-table th,
+        .detail-table td {
+            padding: 11px 14px;
             text-align: left;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
         }
+
         .detail-table th {
-            background-color: #f1f5f9;
-            color: var(--text-main);
+            background: #f1f5f9;
+            color: #1e293b;
             font-weight: 600;
         }
-        .error-message {
-            color: var(--accent-red);
-            font-weight: 600;
+
+        .detail-table tr:hover td {
+            background: #f8fafc;
         }
-        .loading {
-            color: var(--text-muted);
+
+        .detail-table .price-col {
+            font-weight: 600;
+            color: #1e3a8a;
+        }
+
+        .detail-table .no-flights {
+            color: #ef4444;
+            text-align: center;
+            padding: 30px 0;
+            font-weight: 500;
+        }
+
+        /* ── loading / error ── */
+        .loading-placeholder {
+            text-align: center;
+            padding: 40px 0;
+            color: #64748b;
             font-style: italic;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-weight: 600;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        /* ── responsive ── */
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+            .matrix-table th,
+            .matrix-table td {
+                padding: 10px 8px;
+                font-size: 0.8rem;
+            }
+            .matrix-table th:first-child,
+            .matrix-table tbody td:first-child {
+                padding-left: 12px;
+            }
+            .clickable-cell .avg-price {
+                font-size: 1rem;
+            }
+            .detail-section {
+                padding: 16px 14px 20px;
+            }
+            .detail-section h2 {
+                font-size: 1rem;
+            }
+            .detail-table th,
+            .detail-table td {
+                padding: 8px 10px;
+                font-size: 0.78rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .matrix-table th,
+            .matrix-table td {
+                padding: 6px 4px;
+                font-size: 0.7rem;
+            }
+            .clickable-cell .avg-price {
+                font-size: 0.85rem;
+            }
+            .clickable-cell .sample-size {
+                font-size: 0.6rem;
+            }
         }
     </style>
 </head>
 <body>
+
     <div class="container">
+        <!-- HEADER -->
         <header>
             <h1>✈️ Airfare Price Dashboard</h1>
             <p>3 High‑Traffic Routes × 5 Advance Purchase Windows</p>
+            <div class="last-updated" id="lastUpdated">Loading data…</div>
         </header>
 
-        <!-- Matrix Table -->
+        <!-- MATRIX TABLE -->
         <table class="matrix-table" id="matrixTable">
             <thead>
                 <tr>
@@ -134,156 +311,279 @@
             </thead>
             <tbody id="matrixBody">
                 <tr>
-                    <td colspan="6" class="loading">Loading data…</td>
+                    <td colspan="6" class="loading-placeholder">Loading data…</td>
                 </tr>
             </tbody>
         </table>
 
-        <!-- Detail Section (hidden until cell click) -->
-        <div class="detail-section" id="detailSection" style="display: none;">
-            <h2 id="detailTitle"></h2>
-            <table class="detail-table" id="detailTable">
-                <thead>
-                    <tr>
-                        <th>Airline</th>
-                        <th>Flight No.</th>
-                        <th>Departure</th>
-                        <th>arrival</th>
-                        <th>Total Fare (₹)</th>
-                        <th>Base Fare (₹)</th>
-                        <th>fare tax</th>
-                        <th>baggage</th>
-                    </tr>
-                </thead>
-                <tbody id="detailBody"></tbody>
-            </table>
+        <!-- DETAIL SECTION -->
+        <div class="detail-section" id="detailSection">
+            <div class="detail-header">
+                <h2 id="detailTitle">Route – Window</h2>
+                <button class="close-btn" id="detailCloseBtn" aria-label="Close details">✕</button>
+            </div>
+            <div class="detail-table-wrap">
+                <table class="detail-table" id="detailTable">
+                    <thead>
+                        <tr>
+                            <th>Airline / Flight</th>
+                            <th>Departure</th>
+                            <th>Arrival</th>
+                            <th>Time Slot</th>
+                            <th>Price (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // CONFIGURATION
-        // ============================================
-        const routes = ['DEL-BOM', 'BOM-BLR', 'DEL-BLR'];
-        const windows = ['T+1', 'T+7', 'T+15', 'T+30', 'T+45'];
+        // ════════════════════════════════════════════════════════════
+        //  CONFIGURATION
+        // ════════════════════════════════════════════════════════════
 
-        // ============================================
-        // DATA LOADING
-        // ============================================
-        async function loadAllData() {
-            const dataCache = {}; // key: "route_window", value: array of flights
-            const averageCache = {}; // key: "route_window", value: {avg, count}
+        const JSON_FILE = 'target_day.json';
 
-            const fetchPromises = [];
-            routes.forEach(route => {
-                windows.forEach(window => {
-                    const fileName = `${route}_${window}.json`;
-                    const key = `${route}_${window}`;
-                    fetchPromises.push(
-                        fetch(fileName)
-                            .then(response => {
-                                if (!response.ok) throw new Error(`File not found: ${fileName}`);
-                                return response.json();
-                            })
-                            .then(data => {
-                                dataCache[key] = data;
-                                if (Array.isArray(data) && data.length > 0) {
-                                    const totalFares = data.map(f => f.total_fare).filter(v => v !== undefined);
-                                    const avg = totalFares.reduce((a, b) => a + b, 0) / totalFares.length;
-                                    averageCache[key] = { avg: avg, count: data.length };
-                                } else {
-                                    averageCache[key] = { avg: 0, count: 0 };
-                                }
-                            })
-                            .catch(error => {
-                                console.warn(error.message);
-                                averageCache[key] = { avg: null, count: 0 };
-                                dataCache[key] = [];
-                            })
-                    );
-                });
-            });
+        // Map JSON window keys → display labels
+        const WINDOW_MAP = {
+            'T_plus_1': 'T+1',
+            'T_plus_7': 'T+7',
+            'T_plus_15': 'T+15',
+            'T_plus_30': 'T+30',
+            'T_plus_45': 'T+45'
+        };
 
-            await Promise.all(fetchPromises);
-            return { dataCache, averageCache };
+        const WINDOW_ORDER = ['T_plus_1', 'T_plus_7', 'T_plus_15', 'T_plus_30', 'T_plus_45'];
+
+        // ════════════════════════════════════════════════════════════
+        //  HELPERS
+        // ════════════════════════════════════════════════════════════
+
+        /** Parse a price string like "₹6,090" → number 6090 */
+        function parsePrice(str) {
+            if (!str) return NaN;
+            const cleaned = String(str).replace(/[₹,]/g, '').trim();
+            return parseFloat(cleaned);
         }
 
-        // ============================================
-        // RENDER MATRIX
-        // ============================================
-        function renderMatrix(averageCache) {
+        /** Format a number as INR with ₹ symbol */
+        function formatPrice(num) {
+            if (!num || isNaN(num)) return 'N/A';
+            return '₹' + Math.round(num).toLocaleString('en-IN');
+        }
+
+        /** Compute average price from an array of flight objects */
+        function computeAverage(flights) {
+            if (!flights || flights.length === 0) return null;
+            const prices = flights
+                .map(f => parsePrice(f.price))
+                .filter(v => !isNaN(v) && v > 0);
+            if (prices.length === 0) return null;
+            const sum = prices.reduce((a, b) => a + b, 0);
+            return sum / prices.length;
+        }
+
+        /** Escape HTML entities for safe rendering */
+        function esc(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  DATA LOADING
+        // ════════════════════════════════════════════════════════════
+
+        let allData = null; // raw JSON
+        let matrixData = {}; // { routeName: { windowKey: { avg, flights, count } } }
+
+        async function loadData() {
+            try {
+                const resp = await fetch(JSON_FILE);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status} — ${resp.statusText}`);
+                allData = await resp.json();
+
+                // Update last-updated timestamp
+                const updated = document.getElementById('lastUpdated');
+                const now = new Date();
+                updated.textContent = '📅 Last updated: ' + now.toLocaleString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                return allData;
+            } catch (err) {
+                console.error('Failed to load data:', err);
+                document.getElementById('matrixBody').innerHTML =
+                    `<tr><td colspan="6" class="error-message">⚠️ Could not load data. Please ensure <code>${JSON_FILE}</code> is in the same folder.</td></tr>`;
+                throw err;
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  BUILD MATRIX
+        // ════════════════════════════════════════════════════════════
+
+        function buildMatrixFromJson(json) {
+            const routes = json.routes || [];
+            const result = {};
+
+            routes.forEach(route => {
+                const routeName = route.route_name || 'Unknown';
+                const results = route.results || {};
+                const routeData = {};
+
+                WINDOW_ORDER.forEach(key => {
+                    const windowData = results[key] || null;
+                    const flights = (windowData && windowData.flights) ? windowData.flights : [];
+                    const avg = computeAverage(flights);
+                    routeData[key] = {
+                        avg: avg,
+                        count: flights.length,
+                        flights: flights,
+                        requestedDate: windowData ? windowData.requested_date : null
+                    };
+                });
+
+                result[routeName] = routeData;
+            });
+
+            return result;
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  RENDER MATRIX
+        // ════════════════════════════════════════════════════════════
+
+        function renderMatrix(matrix) {
             const tbody = document.getElementById('matrixBody');
             tbody.innerHTML = '';
-            routes.forEach(route => {
-                const tr = document.createElement('tr');
-                const routeCell = document.createElement('td');
-                routeCell.textContent = route;
-                routeCell.style.fontWeight = 'bold';
-                tr.appendChild(routeCell);
 
-                windows.forEach(window => {
-                    const key = `${route}_${window}`;
-                    const info = averageCache[key];
+            const routeNames = Object.keys(matrix);
+            if (routeNames.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="error-message">No route data found in JSON.</td></tr>`;
+                return;
+            }
+
+            routeNames.forEach(routeName => {
+                const tr = document.createElement('tr');
+                const routeData = matrix[routeName];
+
+                // Route name cell
+                const nameCell = document.createElement('td');
+                nameCell.textContent = routeName;
+                tr.appendChild(nameCell);
+
+                // Window cells
+                WINDOW_ORDER.forEach(key => {
                     const td = document.createElement('td');
+                    const info = routeData[key] || { avg: null, count: 0, flights: [] };
                     td.className = 'clickable-cell';
-                    if (info && info.avg !== null) {
-                        td.innerHTML = `<span class="avg-price">₹${info.avg.toFixed(0)}</span>
-                                        <span class="sample-size">${info.count} flights</span>`;
-                        td.addEventListener('click', () => showDetails(route, window, dataCache[key]));
+
+                    if (info.avg !== null && info.count > 0) {
+                        td.innerHTML = `
+                            <span class="avg-price">${formatPrice(info.avg)}</span>
+                            <span class="sample-size">${info.count} flight${info.count > 1 ? 's' : ''}</span>
+                        `;
+                        // Store data for click handler
+                        td.dataset.route = routeName;
+                        td.dataset.window = key;
+                        td.addEventListener('click', () => {
+                            showDetail(routeName, key, info.flights);
+                        });
                     } else {
-                        td.innerHTML = `<span class="error-message">Data not available</span>`;
+                        td.innerHTML = `<span class="no-data">No data</span>`;
+                        td.style.cursor = 'default';
                     }
+
                     tr.appendChild(td);
                 });
+
                 tbody.appendChild(tr);
             });
         }
 
-        // ============================================
-        // SHOW DETAILS ON CLICK
-        // ============================================
-        function showDetails(route, window, flights) {
-            const detailSection = document.getElementById('detailSection');
-            const detailTitle = document.getElementById('detailTitle');
-            const detailBody = document.getElementById('detailBody');
+        // ════════════════════════════════════════════════════════════
+        //  SHOW DETAIL
+        // ════════════════════════════════════════════════════════════
 
-            detailTitle.textContent = `${route} – ${window} Window (${flights.length} flights)`;
-            detailBody.innerHTML = '';
+        function showDetail(routeName, windowKey, flights) {
+            const section = document.getElementById('detailSection');
+            const title = document.getElementById('detailTitle');
+            const body = document.getElementById('detailBody');
 
-            if (flights.length === 0) {
-                detailBody.innerHTML = '<tr><td colspan="5" class="error-message">No flight data available.</td></tr>';
+            const displayWindow = WINDOW_MAP[windowKey] || windowKey;
+            title.innerHTML = `${esc(routeName)} &mdash; <strong>${displayWindow}</strong> <span class="flight-count-badge">${flights.length} flights</span>`;
+
+            body.innerHTML = '';
+
+            if (!flights || flights.length === 0) {
+                body.innerHTML = `<tr><td colspan="5" class="no-flights">No flight details available for this selection.</td></tr>`;
             } else {
                 flights.forEach(f => {
                     const tr = document.createElement('tr');
+                    const flightLabel = f.flight_number || '—';
+                    const dept = f.departure_time || '—';
+                    const arr = f.arrival_time || '—';
+                    const slot = f.time_slot || '—';
+                    const price = f.price ? esc(f.price) : '—';
+
                     tr.innerHTML = `
-                        <td>${f.airline || 'N/A'}</td>
-                        <td>${f.flight_no || 'N/A'}</td>
-                        <td>${f.departure_time || 'N/A'}</td>
-                        <td>${f.arrival_time || 'N/A'}</td>
-                        <td>₹${f.total_fare ? f.total_fare.toLocaleString() : 'N/A'}</td>
-                        <td>₹${f.base_fare ? f.base_fare.toLocaleString() : 'N/A'}</td>
-                        <td>₹${f.fare_tax ? f.fare_tax.toLocaleString() : 'N/A'}</td>
-                        <td>${f.baggage || 'N/A'}</td>
+                        <td><strong>${esc(flightLabel)}</strong></td>
+                        <td>${esc(dept)}</td>
+                        <td>${esc(arr)}</td>
+                        <td>${esc(slot)}</td>
+                        <td class="price-col">${price}</td>
                     `;
-                    detailBody.appendChild(tr);
+                    body.appendChild(tr);
                 });
             }
-            detailSection.style.display = 'block';
-            detailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            section.classList.add('visible');
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // ============================================
-        // INIT
-        // ============================================
-        let dataCache; // store globally for detail view
+        // ════════════════════════════════════════════════════════════
+        //  CLOSE DETAIL
+        // ════════════════════════════════════════════════════════════
+
+        document.getElementById('detailCloseBtn').addEventListener('click', () => {
+            document.getElementById('detailSection').classList.remove('visible');
+        });
+
+        // Also close when clicking outside the detail section (on backdrop)
+        document.addEventListener('click', (e) => {
+            const section = document.getElementById('detailSection');
+            const matrix = document.getElementById('matrixTable');
+            if (section.classList.contains('visible')) {
+                const target = e.target;
+                // If click is not inside the detail section and not on a clickable cell
+                if (!section.contains(target) && !target.closest('.clickable-cell')) {
+                    section.classList.remove('visible');
+                }
+            }
+        });
+
+        // ════════════════════════════════════════════════════════════
+        //  INIT
+        // ════════════════════════════════════════════════════════════
 
         async function init() {
-            const result = await loadAllData();
-            dataCache = result.dataCache;
-            renderMatrix(result.averageCache);
+            try {
+                const json = await loadData();
+                matrixData = buildMatrixFromJson(json);
+                renderMatrix(matrixData);
+            } catch (err) {
+                // error already handled in loadData
+            }
         }
 
         init();
     </script>
+
 </body>
 </html>
