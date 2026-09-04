@@ -1,38 +1,664 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="airfare price index" />
-    <title>Airfare Price Index</title>
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css" />
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="airfare price index" />
+  <title>Airfare Price Index</title>
+
+  <!-- Google Font (Inter) for a modern look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── reset & base ── */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f6f9fc;
+      color: #0b1a33;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── sidebar (3‑line) ── */
+    .sidebar {
+      width: 72px;
+      background: #0b1a33;
+      color: #eef4ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 0 20px;
+      flex-shrink: 0;
+      box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      transition: width 0.2s ease;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    /* on hover expand for readability (optional) */
+    .sidebar:hover {
+      width: 180px;
+    }
+
+    .sidebar .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 40px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sidebar .logo span {
+      background: #facc15;
+      color: #0b1a33;
+      font-size: 0.9rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+      padding: 0 10px;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: #b6c9e0;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .sidebar-nav a .icon {
+      font-size: 1.3rem;
+      line-height: 1;
+      min-width: 28px;
+      text-align: center;
+    }
+
+    .sidebar-nav a .label {
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .sidebar:hover .sidebar-nav a .label {
+      opacity: 1;
+    }
+
+    .sidebar-nav a:hover {
+      background: #1a3355;
+      color: #ffffff;
+    }
+
+    .sidebar-nav a.active {
+      background: #1e3a8a;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 0.7rem;
+      color: #4a668a;
+      white-space: nowrap;
+      padding: 0 10px;
+      opacity: 0.6;
+    }
+
+    /* ── main content ── */
+    .main-content {
+      flex: 1;
+      padding: 30px 40px 40px;
+      max-width: calc(100% - 72px);
+      transition: padding 0.2s;
+    }
+
+    /* header inside main */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0b1a33;
+      letter-spacing: -0.5px;
+    }
+
+    .page-header .badge {
+      background: #eef4ff;
+      color: #1e3a8a;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 40px;
+      border: 1px solid #d6e2f5;
+    }
+
+    /* ── card / dashboard area ── */
+    .dashboard-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 28px 30px 34px;
+      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.06);
+      border: 1px solid #eaf0f8;
+      margin-top: 8px;
+    }
+
+    .dashboard-card .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dashboard-card .card-title small {
+      font-weight: 400;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    /* ── matrix table (reused from your dashboard) ── */
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .matrix-table th,
+    .matrix-table td {
+      padding: 14px 16px;
+      text-align: center;
+      border-bottom: 1px solid #eaf0f8;
+    }
+
+    .matrix-table th {
+      background: #f1f6fd;
+      color: #0b1a33;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .matrix-table th:first-child,
+    .matrix-table td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: #0b1a33;
+    }
+
+    .matrix-table tbody tr:hover {
+      background: #f8faff;
+    }
+
+    .clickable-cell {
+      cursor: pointer;
+      transition: background 0.15s;
+      border-radius: 8px;
+    }
+
+    .clickable-cell:hover {
+      background: #e6effb !important;
+    }
+
+    .clickable-cell .avg-price {
+      font-weight: 700;
+      color: #1e3a8a;
+      font-size: 1.1rem;
+      display: block;
+    }
+
+    .clickable-cell .sample-size {
+      font-size: 0.7rem;
+      color: #64748b;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .clickable-cell .no-data {
+      color: #b91c1c;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    /* ── detail section (hidden by default) ── */
+    .detail-section {
+      margin-top: 30px;
+      background: #fafcff;
+      border-radius: 16px;
+      padding: 20px 24px 24px;
+      border: 1px solid #e2edf9;
+      display: none;
+    }
+
+    .detail-section.visible {
+      display: block;
+      animation: fadeSlide 0.25s ease;
+    }
+
+    @keyframes fadeSlide {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .detail-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #0b1a33;
+    }
+
+    .detail-header .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      line-height: 1;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 0 6px;
+      transition: color 0.2s;
+    }
+
+    .detail-header .close-btn:hover {
+      color: #b91c1c;
+    }
+
+    .detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .detail-table th,
+    .detail-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #eaf0f8;
+    }
+
+    .detail-table th {
+      background: #f1f6fd;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .detail-table .price-col {
+      font-weight: 600;
+      color: #1e3a8a;
+    }
+
+    .detail-table .no-flights {
+      text-align: center;
+      color: #b91c1c;
+      padding: 24px 0;
+    }
+
+    /* ── responsive ── */
+    @media (max-width: 820px) {
+      .sidebar {
+        width: 60px;
+        padding: 20px 0;
+      }
+      .sidebar:hover {
+        width: 160px;
+      }
+      .main-content {
+        padding: 20px 18px 30px;
+        max-width: calc(100% - 60px);
+      }
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+      .dashboard-card {
+        padding: 18px 14px 22px;
+      }
+      .matrix-table th,
+      .matrix-table td {
+        padding: 10px 8px;
+        font-size: 0.75rem;
+      }
+      .clickable-cell .avg-price {
+        font-size: 0.95rem;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .sidebar {
+        width: 48px;
+      }
+      .sidebar:hover {
+        width: 140px;
+      }
+      .main-content {
+        padding: 14px 10px 20px;
+        max-width: calc(100% - 48px);
+      }
+      .page-header h1 {
+        font-size: 1.2rem;
+      }
+      .matrix-table th,
+      .matrix-table td {
+        padding: 6px 4px;
+        font-size: 0.65rem;
+      }
+      .clickable-cell .avg-price {
+        font-size: 0.8rem;
+      }
+      .detail-section {
+        padding: 14px 12px 18px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <nav>
-            <!-- Navigation links -->
-          <a href="real_time_flight_price.html">live flight price</a>
-        </nav>
-    </header>
 
-    <!-- Main Content -->
-    <main>
-        <h1>Hello, World!</h1>
-        <p>Your content goes here.</p>
-    </main>
+  <!-- ═══ SIDEBAR (3‑line) ═══ -->
+  <aside class="sidebar">
+    <div class="logo">
+      ✈<span>API</span>
+    </div>
+    <nav class="sidebar-nav">
+      <!-- 3 lines: each is a nav link. We embed "live flight price" as one of them -->
+      <a href="#" class="active">
+        <span class="icon">📊</span>
+        <span class="label">Dashboard</span>
+      </a>
+      <a href="real_time_flight_price.html">
+        <span class="icon">🛫</span>
+        <span class="label">Live flight price</span>
+      </a>
+      <a href="#">
+        <span class="icon">📈</span>
+        <span class="label">Analytics</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">v1.0</div>
+  </aside>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Your Name</p>
-    </footer>
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main class="main-content">
 
-    <!-- JavaScript -->
-    <script src="script.js" defer></script>
+    <!-- page header -->
+    <div class="page-header">
+      <h1>Airfare Price Index</h1>
+      <span class="badge">📅 3 routes · 5 windows</span>
+    </div>
+
+    <!-- dashboard card (reuses the airfare matrix) -->
+    <div class="dashboard-card">
+      <div class="card-title">
+        <span>✈️ Advance purchase matrix</span>
+        <small>click a cell for flight details</small>
+      </div>
+
+      <!-- matrix table -->
+      <table class="matrix-table" id="matrixTable">
+        <thead>
+          <tr>
+            <th>Route</th>
+            <th>T+1</th>
+            <th>T+7</th>
+            <th>T+15</th>
+            <th>T+30</th>
+            <th>T+45</th>
+          </tr>
+        </thead>
+        <tbody id="matrixBody">
+          <tr><td colspan="6" style="text-align:center; padding:30px; color:#64748b;">Loading data…</td></tr>
+        </tbody>
+      </table>
+
+      <!-- detail section (hidden until click) -->
+      <div class="detail-section" id="detailSection">
+        <div class="detail-header">
+          <h3 id="detailTitle">Route – Window</h3>
+          <button class="close-btn" id="detailCloseBtn" aria-label="Close details">✕</button>
+        </div>
+        <table class="detail-table" id="detailTable">
+          <thead>
+            <tr>
+              <th>Flight</th>
+              <th>Departure</th>
+              <th>Arrival</th>
+              <th>Time slot</th>
+              <th>Price (₹)</th>
+            </tr>
+          </thead>
+          <tbody id="detailBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- optional extra content -->
+    <p style="margin-top: 24px; color: #64748b; font-size: 0.85rem; border-top: 1px solid #eaf0f8; padding-top: 20px;">
+      Data sourced from <code>target_day.json</code> · hover sidebar to expand
+    </p>
+  </main>
+
+  <!-- ═══ JAVASCRIPT ═══ -->
+  <script>
+    (function() {
+      'use strict';
+
+      // ── config ──
+      const JSON_FILE = 'target_day.json';
+      const WINDOW_MAP = {
+        'T_plus_1': 'T+1',
+        'T_plus_7': 'T+7',
+        'T_plus_15': 'T+15',
+        'T_plus_30': 'T+30',
+        'T_plus_45': 'T+45'
+      };
+      const WINDOW_ORDER = ['T_plus_1', 'T_plus_7', 'T_plus_15', 'T_plus_30', 'T_plus_45'];
+
+      // ── helpers ──
+      function parsePrice(str) {
+        if (!str) return NaN;
+        const cleaned = String(str).replace(/[₹,]/g, '').trim();
+        return parseFloat(cleaned);
+      }
+
+      function formatPrice(num) {
+        if (!num || isNaN(num)) return 'N/A';
+        return '₹' + Math.round(num).toLocaleString('en-IN');
+      }
+
+      function computeAverage(flights) {
+        if (!flights || flights.length === 0) return null;
+        const prices = flights
+          .map(f => parsePrice(f.price))
+          .filter(v => !isNaN(v) && v > 0);
+        if (prices.length === 0) return null;
+        return prices.reduce((a, b) => a + b, 0) / prices.length;
+      }
+
+      function esc(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      // ── DOM refs ──
+      const matrixBody = document.getElementById('matrixBody');
+      const detailSection = document.getElementById('detailSection');
+      const detailTitle = document.getElementById('detailTitle');
+      const detailBody = document.getElementById('detailBody');
+      const closeBtn = document.getElementById('detailCloseBtn');
+
+      // ── load & render ──
+      async function loadData() {
+        try {
+          const resp = await fetch(JSON_FILE);
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const json = await resp.json();
+          return json;
+        } catch (err) {
+          console.error('Load error:', err);
+          matrixBody.innerHTML =
+            `<tr><td colspan="6" style="text-align:center;color:#b91c1c;padding:24px;">⚠️ Could not load <code>${JSON_FILE}</code></td></tr>`;
+          return null;
+        }
+      }
+
+      function buildMatrix(json) {
+        const routes = json.routes || [];
+        const result = {};
+        routes.forEach(route => {
+          const name = route.route_name || 'Unknown';
+          const results = route.results || {};
+          const routeData = {};
+          WINDOW_ORDER.forEach(key => {
+            const win = results[key] || null;
+            const flights = (win && win.flights) ? win.flights : [];
+            const avg = computeAverage(flights);
+            routeData[key] = {
+              avg: avg,
+              count: flights.length,
+              flights: flights,
+              requestedDate: win ? win.requested_date : null
+            };
+          });
+          result[name] = routeData;
+        });
+        return result;
+      }
+
+      function renderMatrix(matrix) {
+        const tbody = matrixBody;
+        tbody.innerHTML = '';
+        const routeNames = Object.keys(matrix);
+        if (routeNames.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#b91c1c;padding:20px;">No route data found</td></tr>`;
+          return;
+        }
+
+        routeNames.forEach(routeName => {
+          const tr = document.createElement('tr');
+          const routeData = matrix[routeName];
+
+          const nameCell = document.createElement('td');
+          nameCell.textContent = routeName;
+          tr.appendChild(nameCell);
+
+          WINDOW_ORDER.forEach(key => {
+            const td = document.createElement('td');
+            const info = routeData[key] || { avg: null, count: 0, flights: [] };
+            td.className = 'clickable-cell';
+
+            if (info.avg !== null && info.count > 0) {
+              td.innerHTML = `
+                <span class="avg-price">${formatPrice(info.avg)}</span>
+                <span class="sample-size">${info.count} flight${info.count > 1 ? 's' : ''}</span>
+              `;
+              td.dataset.route = routeName;
+              td.dataset.window = key;
+              td.addEventListener('click', () => {
+                showDetail(routeName, key, info.flights);
+              });
+            } else {
+              td.innerHTML = `<span class="no-data">No data</span>`;
+              td.style.cursor = 'default';
+            }
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+      }
+
+      function showDetail(routeName, windowKey, flights) {
+        const displayWindow = WINDOW_MAP[windowKey] || windowKey;
+        detailTitle.innerHTML = `${esc(routeName)} &mdash; <strong>${displayWindow}</strong> <span style="background:#eaf0f8;padding:2px 12px;border-radius:30px;font-size:0.75rem;font-weight:600;margin-left:8px;">${flights.length} flights</span>`;
+
+        detailBody.innerHTML = '';
+        if (!flights || flights.length === 0) {
+          detailBody.innerHTML = `<tr><td colspan="5" class="no-flights">No flight details available</td></tr>`;
+        } else {
+          flights.forEach(f => {
+            const tr = document.createElement('tr');
+            const flightLabel = f.flight_number || '—';
+            const dept = f.departure_time || '—';
+            const arr = f.arrival_time || '—';
+            const slot = f.time_slot || '—';
+            const price = f.price ? esc(f.price) : '—';
+            tr.innerHTML = `
+              <td><strong>${esc(flightLabel)}</strong></td>
+              <td>${esc(dept)}</td>
+              <td>${esc(arr)}</td>
+              <td>${esc(slot)}</td>
+              <td class="price-col">${price}</td>
+            `;
+            detailBody.appendChild(tr);
+          });
+        }
+        detailSection.classList.add('visible');
+        detailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      // ── close detail ──
+      closeBtn.addEventListener('click', () => {
+        detailSection.classList.remove('visible');
+      });
+
+      // close on click outside detail
+      document.addEventListener('click', (e) => {
+        if (detailSection.classList.contains('visible')) {
+          if (!detailSection.contains(e.target) && !e.target.closest('.clickable-cell')) {
+            detailSection.classList.remove('visible');
+          }
+        }
+      });
+
+      // ── init ──
+      async function init() {
+        const json = await loadData();
+        if (json) {
+          const matrix = buildMatrix(json);
+          renderMatrix(matrix);
+        }
+      }
+      init();
+
+    })();
+  </script>
+
 </body>
 </html>
