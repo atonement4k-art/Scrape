@@ -116,7 +116,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>Airfare Price Dashboard</h1>
+            <h1>✈️ Airfare Price Dashboard</h1>
             <p>3 High‑Traffic Routes × 5 Advance Purchase Windows</p>
         </header>
 
@@ -148,6 +148,7 @@
                         <th>Airline</th>
                         <th>Flight No.</th>
                         <th>Departure</th>
+                        <th>arrival</th>
                         <th>Total Fare (₹)</th>
                         <th>Base Fare (₹)</th>
                     </tr>
@@ -256,6 +257,7 @@
                         <td>${f.airline || 'N/A'}</td>
                         <td>${f.flight_no || 'N/A'}</td>
                         <td>${f.departure_time || 'N/A'}</td>
+                        <td>${f.arrival_time || 'N/A'}</td>
                         <td>₹${f.total_fare ? f.total_fare.toLocaleString() : 'N/A'}</td>
                         <td>₹${f.base_fare ? f.base_fare.toLocaleString() : 'N/A'}</td>
                     `;
